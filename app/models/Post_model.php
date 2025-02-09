@@ -1,0 +1,32 @@
+<?php 
+
+class Post_model
+{
+  private $table = 'post';
+  private $db;
+
+  private function __construct()
+  {
+    $this->db = new Database();
+  }
+
+  private function getAllPost(){
+    $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
+              FROM ' . $this->table . ' p
+              JOIN user u
+              ON p.id_user =  u.id_user';
+    $this->db->query($query);
+    return $this->db->resultSet();
+  }
+
+  private function getPostById($id){
+    $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
+              FROM ' . $this->table . ' p
+              JOIN user u
+              ON p.id_user =  u.id_user
+              WHERE p.id_post = :id';
+    $this->db->query($query);
+    $this->db->bind('id', $id);
+    return $this->db->single();
+  }
+}
