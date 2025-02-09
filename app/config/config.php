@@ -1,6 +1,6 @@
 <?php
 
-define("BASEURL", "http://localhost/public");
+define("BASEURL", "http://localhost:8080/KPL2025/public");
 
 // DATANASE
 define('DB_HOST', 'localhost');
