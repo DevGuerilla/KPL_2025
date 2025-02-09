@@ -10,7 +10,7 @@ class Post_model
     $this->db = new Database();
   }
 
-  private function getAllPost(){
+  public function getAllPost(){
     $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
               FROM ' . $this->table . ' p
               JOIN user u
@@ -19,7 +19,7 @@ class Post_model
     return $this->db->resultSet();
   }
 
-  private function getPostById($id){
+  public function getPostById($id){
     $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
               FROM ' . $this->table . ' p
               JOIN user u

@@ -1,3 +1,3 @@
 <?php
-header('Location: /KPL2025/public');
+header('Location: /public');
 return;
