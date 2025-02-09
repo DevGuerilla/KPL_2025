@@ -1,9 +1,16 @@
 <?php
+require __DIR__ . '/../../vendor/autoload.php';
 
-define("BASEURL", "http://localhost:8080/KPL2025/public");
+// ENV
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
+$dotenv->safeLoad();
 
-// DATANASE
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'php_mvc');
+// APP
+define("APPNAME", $_ENV['APP_NAME'] ?? 'UPTIME');
+define("BASEURL", ($_ENV['APP_URL'] ?? '') . "/public");
+
+// DATABASE
+define('DB_HOST', $_ENV['DB_HOST'] ?? '127.0.0.1');
+define('DB_USER', $_ENV['DB_USERNAME'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASSWORD'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? '');
