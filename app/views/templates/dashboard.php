@@ -1,7 +1,7 @@
 <?php include_once __DIR__ . '/../templates/header.php'; ?>
 
 <div x-data="{ 
-    sidebarOpen: false,
+    sidebarOpen: true,
     currentPath: window.location.pathname,
     init() {
         // Set current path saat komponen dimuat
