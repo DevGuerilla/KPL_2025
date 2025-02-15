@@ -5,7 +5,7 @@
 </style>
 
 <div class="min-h-screen flex items-center justify-center p-4"
-    x-data="{ show: true}"
+    x-data="{ show: false }"
     x-init="setTimeout(() => show = true, 150)">
     <div x-cloak
         x-show="show"

@@ -1,7 +1,7 @@
 <?php include_once __DIR__ . '/../templates/navbar.php'; ?>
 
 <!-- Modern Hero Section with Blue-500 Base -->
-<div class="relative min-h-screen bg-blue-500 overflow-hidden -mt-16 -z-10">
+<div class="relative bg-blue-500 overflow-hidden pt-24">
     <!-- Animated Gradient Background -->
     <div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-400 to-blue-400"></div>
     
@@ -13,12 +13,12 @@
 
     <!-- Content Section -->
     <main class="relative container mx-auto px-4">
-        <div class="flex min-h-screen">
+        <div class="min-h-[calc(100vh-6rem)] flex items-center">
             <div class="flex flex-col md:flex-row items-center justify-between w-full gap-12 py-12">
                 <!-- Left Content -->
                 <div class="w-full md:w-1/2 space-y-8 text-center md:text-left z-10">
                     <div class="space-y-6">
-                        <span class="inline-block px-4 py-2 bg-blue-50 rounded-full text-md font-semibold backdrop-blur-sm text-blue-500 ">
+                        <span class="inline-block px-4 py-2 bg-blue-50 rounded-full text-md font-semibold backdrop-blur-sm text-blue-500">
                             UNPAS TIME
                         </span>
                         <h1 class="text-4xl md:text-5xl font-bold text-white leading-tight">
@@ -40,7 +40,6 @@
                             Bagikan Ceritamu
                         </a>
                     </div>
-
                 </div>
 
                 <!-- Right Content - Image with Modern Effects -->

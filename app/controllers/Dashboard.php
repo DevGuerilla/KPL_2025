@@ -16,6 +16,7 @@ class Dashboard extends Controller
         $this->view('templates/header');
         $this->view('dashboard/index');
         $this->view('templates/footer');
+        
     }
 
     public function posts()
@@ -26,6 +27,7 @@ class Dashboard extends Controller
         $this->view('templates/header');
         $this->view('dashboard/posts', $data);
         $this->view('templates/footer');
+        
     }
 
     public function createPost()
