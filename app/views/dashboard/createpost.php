@@ -9,11 +9,10 @@ ob_start();
             <p class="mt-1 text-sm text-gray-600">Tulis dan terbitkan artikel baru Anda</p>
         </div>
     </div>
-
     <div x-data="{ 
-        title: '', 
+        title: '<?= isset($data['title']) ? $data['title'] : ''; ?>', 
         isPreview: false,
-        imageUrl: '',
+        imageUrl: '<?= isset($data['image']) ? BASEURL . '/img/posts/' . $data['image'] : ''; ?>',
         fileChosen(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -31,13 +30,15 @@ ob_start();
         }
     }">
         <!-- Main Form -->
-        <form id="postForm" class="space-y-4" x-show="!isPreview">
+        <form action="<?= BASEURL . (isset($data['id_post']) ? '/dashboard/doEditPost' : '/dashboard/doCreatePost'); ?>" enctype="multipart/form-data" id="postForm" method="post" class="space-y-4" x-show="!isPreview">
+            <input type="hidden" name="id_post" value="<?= isset($data['id_post']) ? $data['id_post'] : ''; ?>">
             <!-- First Row: Title and Tags (50-50 split) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <!-- Title Input (Left 50%) -->
                 <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
                     <label class="block text-sm font-medium text-gray-700 mb-1 pl-4">Judul Artikel</label>
                     <input type="text"
+                        name="title"
                         x-model="title"
                         placeholder="Masukkan judul artikel..."
                         class="w-full text-lg outline-none border-b focus:border-blue-500 focus:ring-0 bg-transparent pb-1 px-4 py-1"
@@ -60,6 +61,7 @@ ob_start();
                     <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Utama</label>
 
                     <!-- Image Preview -->
+                    <input type="text" name="old_image" value="<?= isset($data['image']) ? $data['image'] : ''; ?>" class="hidden">
                     <template x-if="imageUrl">
                         <div class="relative group mb-2">
                             <img :src="imageUrl"
@@ -79,6 +81,7 @@ ob_start();
                     <div x-show="!imageUrl"
                         class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-blue-500 transition-all duration-300 h-[250px] flex flex-col items-center justify-center">
                         <input type="file"
+                            name="image"
                             @change="fileChosen"
                             accept="image/*"
                             class="hidden"
@@ -97,14 +100,14 @@ ob_start();
                 <!-- Content Editor (Right 50%) -->
                 <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Konten Artikel</label>
-                    <input id="content" type="hidden" name="content">
+                    <input id="content" type="hidden" name="content" value="<?= isset($data['content']) ? $data['content'] : ''; ?>">
                     <trix-editor input="content" class="prose max-w-none h-[250px] bg-white rounded-lg"></trix-editor>
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-3 mt-4">
-                <button type="submit"
+                <button type="submit" name="submit"
                     class="group relative px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 hover:shadow-sm overflow-hidden">
                     <span class="relative z-10 transition-transform duration-300 group-hover:translate-x-1">
                         Terbitkan

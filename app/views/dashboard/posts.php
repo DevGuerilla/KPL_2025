@@ -6,6 +6,7 @@ $draftCount = 0;
 $totalViews = 0;
 
 foreach ($data['posts'] as $post) {
+    // Count published and draft posts
     if (isset($post['status']) && $post['status'] === 'published') {
         $publishedCount++;
     } else {
