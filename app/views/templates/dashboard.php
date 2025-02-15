@@ -1,19 +1,16 @@
 <?php include_once __DIR__ . '/../templates/header.php'; ?>
 
 <div x-data="{ 
-    sidebarOpen: false,
+    sidebarOpen: true,
     currentPath: window.location.pathname,
     init() {
-        // Set current path saat komponen dimuat
         this.currentPath = window.location.pathname;
     }
 }">
-    <!-- Sidebar -->
     <div :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
         class="fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-20 pt-24">
         <div class="p-6">
             <nav class="space-y-2">
-                <!-- Dashboard Link -->
                 <a href="<?= BASEURL; ?>/dashboard"
                     class="flex items-center gap-3 py-2.5 px-4 rounded-xl transition-all duration-300 group"
                     :class="currentPath === '<?= BASEURL; ?>/dashboard' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'">
@@ -30,12 +27,11 @@
                     </div>
                 </a>
 
-                <!-- Create Post Link -->
                 <a href="<?= BASEURL; ?>/dashboard/createpost"
                     class="flex items-center gap-3 py-2.5 px-4 rounded-xl transition-all duration-300 group"
                     :class="currentPath === '<?= BASEURL; ?>/dashboard/createpost' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'">
                     <div class="w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-300"
-                        :class="currentPath === '<?= BASEURL; ?>/dashboard/createpost' ? 'bg-blue-100 text-blue-600' : 'bg-gray-50 text-gray-600 group-hover:bg-gray-100'">
+                        :class="currentPath === '<?= BASEURL; ?>/dashboard/editpost' ? 'bg-blue-100 text-blue-600' : 'bg-gray-50 text-gray-600 group-hover:bg-gray-100'">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M12 4v16m8-8H4" />
@@ -47,7 +43,6 @@
                     </div>
                 </a>
 
-                <!-- Posts Link -->
                 <a href="<?= BASEURL; ?>/dashboard/posts"
                     class="flex items-center gap-3 py-2.5 px-4 rounded-xl transition-all duration-300 group"
                     :class="currentPath === '<?= BASEURL; ?>/dashboard/posts' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'">
@@ -67,14 +62,12 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="lg:ml-64 min-h-screen bg-gray-50">
         <!-- Top Navigation -->
         <?php include_once __DIR__ . '/../templates/navbar.php'; ?>
 
 
-        <!-- Content Area -->
-        <main class="p-4 sm:p-6 lg:p-8 pt-28">
+        <main class="p-4 sm:p-6 lg:p-8 pt-28 mb-6">
             <?php
             if (isset($content)) {
                 echo $content;
@@ -85,7 +78,6 @@
         </main>
     </div>
 
-    <!-- Mobile Sidebar Toggle Button -->
     <button @click="sidebarOpen = !sidebarOpen"
         class="lg:hidden fixed bottom-6 right-6 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors z-30">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"

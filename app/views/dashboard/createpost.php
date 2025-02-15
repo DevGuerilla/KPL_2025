@@ -1,197 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+ob_start();
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create New Post | UNPAS Blog</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Trix Editor -->
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
-    <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
-    <!-- Tagify -->
-    <script src="https://unpkg.com/@yaireo/tagify"></script>
-    <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
+<div class="space-y-4 mt-20">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900">Buat Artikel Baru</h1>
+            <p class="mt-1 text-sm text-gray-600">Tulis dan terbitkan artikel baru Anda</p>
+        </div>
+    </div>
+
+    <div x-data="{ 
+        title: '', 
+        isPreview: false,
+        imageUrl: '',
+        fileChosen(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.type.match(/image.*/)) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.imageUrl = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        removeImage() {
+            this.imageUrl = '';
+            document.getElementById('image-upload').value = '';
         }
-
-        /* Trix Custom Styling */
-        trix-editor {
-            @apply border border-gray-200 rounded-lg min-h-[400px] px-4 py-2;
-        }
-
-        trix-toolbar {
-            @apply border border-gray-200 rounded-t-lg border-b-0 px-2 py-2 bg-gray-50;
-        }
-
-        trix-toolbar .trix-button-group {
-            @apply border border-gray-200 rounded mr-2;
-        }
-
-        trix-toolbar .trix-button {
-            @apply border-none bg-transparent hover:bg-gray-100;
-        }
-
-        /* Tagify Custom Styling */
-        .tagify {
-            @apply border border-gray-200 rounded-lg px-3 py-2;
-        }
-
-        .tagify__tag {
-            @apply bg-blue-50 text-blue-700;
-        }
-
-        .tagify__tag__removeBtn {
-            @apply text-blue-700;
-        }
-    </style>
-</head>
-
-<body class="bg-gray-50" x-data="{ title: '', isPreview: false }">
-    <div class="min-h-screen">
-        <!-- Top Navigation -->
-        <nav class="bg-white border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <span class="text-xl font-semibold">UNPAS Blog</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button @click="isPreview = !isPreview"
-                            class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
-                            {{ isPreview ? 'Edit' : 'Preview' }}
-                        </button>
-                        <button type="submit" form="postForm"
-                            class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
-                            Publish
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="max-w-4xl mx-auto px-4 py-8">
-            <form id="postForm" class="space-y-6" x-show="!isPreview">
-                <!-- Title Input -->
-                <div>
+    }">
+        <!-- Main Form -->
+        <form id="postForm" class="space-y-4" x-show="!isPreview">
+            <!-- First Row: Title and Tags (50-50 split) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Title Input (Left 50%) -->
+                <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-1 pl-4">Judul Artikel</label>
                     <input type="text"
                         x-model="title"
-                        placeholder="Post Title"
-                        class="w-full text-3xl font-semibold border-0 border-b border-gray-200 focus:border-blue-500 focus:ring-0 bg-transparent pb-2"
+                        placeholder="Masukkan judul artikel..."
+                        class="w-full text-lg outline-none border-b focus:border-blue-500 focus:ring-0 bg-transparent pb-1 px-4 py-1"
                         required>
                 </div>
 
-                <!-- Featured Image with Preview -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200" x-data="imagePreview()">
-                    <label class="block space-y-4">
-                        <span class="text-sm font-medium text-gray-700">Featured Image</span>
-
-                        <!-- Image Preview -->
-                        <template x-if="imageUrl">
-                            <div class="relative group">
-                                <img :src="imageUrl"
-                                    class="w-full h-[300px] object-cover rounded-lg shadow-sm"
-                                    alt="Preview">
-                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                    <button type="button"
-                                        @click="removeImage"
-                                        class="text-white bg-red-500/80 hover:bg-red-500 px-4 py-2 rounded-md text-sm transition-colors">
-                                        Remove Image
-                                    </button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <!-- Upload Area -->
-                        <div x-show="!imageUrl"
-                            class="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center hover:border-blue-500 transition-colors">
-                            <input type="file"
-                                @change="fileChosen"
-                                accept="image/*"
-                                class="hidden"
-                                id="image-upload">
-                            <label for="image-upload" class="cursor-pointer">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                <p class="mt-2 text-sm text-gray-500">Click to upload or drag and drop</p>
-                                <p class="mt-1 text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-                            </label>
-                        </div>
-                    </label>
+                <!-- Tags Input (Right 50%) -->
+                <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                    <input id="tags" type="text" name="tags" 
+                        class="w-full text-lg border-0 border-b border-gray-200 focus:border-blue-500 focus:ring-0 bg-transparent pb-1 rounded-lg" 
+                        placeholder="Tambahkan tags...">
                 </div>
-
-                <!-- Trix Editor -->
-                <div class="bg-white rounded-lg">
-                    <input id="content" type="hidden" name="content">
-                    <trix-editor input="content" class="prose max-w-none"></trix-editor>
-                </div>
-
-                <!-- Tags -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-                    <input id="tags" type="text" name="tags" class="w-full" placeholder="Add tags...">
-                </div>
-            </form>
-
-            <!-- Preview Mode -->
-            <div x-show="isPreview" class="bg-white rounded-lg p-8 border border-gray-200">
-                <h1 x-text="title" class="text-3xl font-bold mb-6"></h1>
-                <div x-html="document.querySelector('trix-editor').innerHTML" class="prose max-w-none"></div>
             </div>
-        </main>
+
+            <!-- Second Row: Image and Content (50-50 split) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Featured Image (Left 50%) -->
+                <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Utama</label>
+
+                    <!-- Image Preview -->
+                    <template x-if="imageUrl">
+                        <div class="relative group mb-2">
+                            <img :src="imageUrl"
+                                class="w-full h-[250px] object-cover rounded-lg"
+                                alt="Preview">
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg flex items-center justify-center">
+                                <button type="button"
+                                    @click="removeImage"
+                                    class="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transform hover:scale-105 transition-all duration-300">
+                                    Hapus Gambar
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Upload Area -->
+                    <div x-show="!imageUrl"
+                        class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-blue-500 transition-all duration-300 h-[250px] flex flex-col items-center justify-center">
+                        <input type="file"
+                            @change="fileChosen"
+                            accept="image/*"
+                            class="hidden"
+                            id="image-upload">
+                        <label for="image-upload" class="cursor-pointer">
+                            <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-500">Klik untuk upload atau drag and drop</p>
+                            <p class="mt-1 text-xs text-gray-400">PNG, JPG, GIF (Maks. 10MB)</p>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Content Editor (Right 50%) -->
+                <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Konten Artikel</label>
+                    <input id="content" type="hidden" name="content">
+                    <trix-editor input="content" class="prose max-w-none h-[250px] bg-white rounded-lg"></trix-editor>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-3 mt-4">
+                <button type="submit"
+                    class="group relative px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 hover:shadow-sm overflow-hidden">
+                    <span class="relative z-10 transition-transform duration-300 group-hover:translate-x-1">
+                        Terbitkan
+                    </span>
+                    <div class="absolute inset-0 bg-blue-700 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                </button>
+            </div>
+        </form>
+
+        <!-- Preview Mode -->
+        <div x-show="isPreview" class="bg-white rounded-lg border border-gray-200 p-6 transition-all duration-300 hover:shadow-sm">
+            <h1 x-text="title" class="text-2xl font-bold mb-4"></h1>
+            <div x-html="document.querySelector('trix-editor').innerHTML" class="prose max-w-none"></div>
+        </div>
     </div>
+</div>
 
-    <script>
-        // Add this before existing script
-        function imagePreview() {
-            return {
-                imageUrl: '',
-                fileChosen(event) {
-                    const file = event.target.files[0];
-                    if (!file) return;
+<style>
+    /* Custom Trix Editor Styling */
+    trix-toolbar {
+        @apply border border-gray-200 rounded-t-lg border-b-0 px-2 py-1 bg-gray-50;
+    }
 
-                    if (file.type.match(/image.*/)) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            this.imageUrl = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                },
-                removeImage() {
-                    this.imageUrl = '';
-                    document.getElementById('image-upload').value = '';
-                }
-            }
+    trix-editor {
+        @apply border border-gray-200 rounded-b-lg px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent;
+        height: calc(250px - 3rem) !important;
+    }
+
+    /* Custom Tagify Styling */
+    .tagify {
+        @apply border-0 border-b border-gray-200 rounded-none px-0 py-1;
+    }
+
+    .tagify__tag {
+        @apply bg-blue-50;
+    }
+
+    .tagify__tag__removeBtn {
+        @apply text-blue-700;
+    }
+
+    .tagify__tag>div {
+        @apply text-blue-700;
+    }
+
+    .tagify__input::before {
+        @apply text-gray-400;
+    }
+
+    /* Input Placeholder Styling */
+    input::placeholder {
+        @apply text-gray-400;
+    }
+</style>
+
+<script>
+    // Initialize Tagify
+    const tagsInput = document.querySelector('#tags');
+    const tagify = new Tagify(tagsInput, {
+        maxTags: 5,
+        dropdown: {
+            maxItems: 5,
+            classname: "tags-dropdown",
+            enabled: 0,
+            closeOnSelect: false
         }
+    });
 
-        // Initialize Tagify
-        const tagsInput = document.querySelector('#tags');
-        const tagify = new Tagify(tagsInput, {
-            maxTags: 5,
-            dropdown: {
-                maxItems: 5,
-                classname: "tags-dropdown",
-                enabled: 0,
-                closeOnSelect: false
-            }
-        });
+    // Prevent file attachments in Trix
+    addEventListener("trix-file-accept", function(event) {
+        event.preventDefault();
+    });
+</script>
 
-        // Additional Trix configuration if needed
-        addEventListener("trix-file-accept", function(event) {
-            // Prevent file attachments
-            event.preventDefault();
-        });
-    </script>
-</body>
-
-</html>
+<?php
+$content = ob_get_clean();
+require_once __DIR__ . '/../templates/dashboard.php';
+?>

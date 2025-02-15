@@ -13,21 +13,17 @@
     isLoading: false
 }" @scroll.window="scrolled = window.pageYOffset > 20">
 
-    <!-- Main Navigation Bar -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-slate-50 shadow-sm rounded-b-xl opacity-95"
         :class="{ 'shadow-md': scrolled }">
         <div class="max-w-[90%] mx-auto">
-            <div class="flex items-center justify-between h-24 px-6">
-                <!-- Logo -->
+            <div class="flex items-center justify-between h-20 px-6">
                 <div class="flex items-center">
                     <a href="<?= BASEURL; ?>" class="group flex items-center">
-                        <img src="<?= BASEURL; ?>/img/logo_only.png" alt="Logo" class="h-10 w-auto transform transition-transform duration-300 group-hover:scale-105">
+                        <img src="<?= BASEURL; ?>/img/logo_only.png" alt="Logo" class="h-10 w-auto transform transition-transform duration-300 group-hover:scale-105 object-scale-down">
                     </a>
                 </div>
 
-                <!-- Right Side Items -->
                 <div class="flex items-center gap-6">
-                    <!-- Search Button -->
                     <button @click="searchOpen = true"
                         class="p-2.5 hover:bg-gray-100 rounded-full transition-all duration-300 hover:scale-110">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,7 +32,6 @@
                         </svg>
                     </button>
 
-                    <!-- Authentication Buttons for Guest -->
                     <?php if (!isset($_SESSION['isLoggedIn'])): ?>
                     <div class="flex items-center gap-4">
                         <a href="<?= BASEURL; ?>/auth/login"
@@ -49,7 +44,6 @@
                         </a>
                     </div>
                     <?php else: ?>
-                    <!-- User Menu for Authenticated Users -->
                     <div class="relative" x-data="{ 
                         open: false,
                         showLogoutConfirm: false,
@@ -67,7 +61,6 @@
                             }
                         }
                     }">
-                        <!-- Profile Button -->
                         <button @click="toggleDropdown()"
                             class="relative flex items-center gap-3 p-2.5 hover:bg-gray-100 rounded-xl transition-all duration-300 group">
                             <div class="flex items-center gap-3">
@@ -93,7 +86,6 @@
                             </div>
                         </button>
 
-                        <!-- Dropdown Menu -->
                         <div x-show="open" 
                             x-ref="dropdown"
                             @click.away="toggleDropdown()"
@@ -101,7 +93,6 @@
                             style="display: none;">
                             
                             <div class="p-2 space-y-1">
-                                <!-- Profile -->
                                 <a href="<?= BASEURL; ?>/profile" 
                                     class="flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-300 group">
                                     <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors duration-300">
@@ -118,7 +109,6 @@
 
                                 <div class="h-px bg-gray-100 my-2"></div>
 
-                                <!-- Logout Button -->
                                 <form action="<?= BASEURL; ?>/auth/logout" method="post">
                                     <button type="submit" 
                                         class="w-full flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-red-50 transition-all duration-300 group">
@@ -143,7 +133,6 @@
         </div>
     </nav>
 
-    <!-- Search Overlay -->
     <div x-show="searchOpen" 
         x-cloak
         x-transition:enter="transition ease-out duration-300"
@@ -161,7 +150,6 @@
                 x-transition:enter-start="opacity-0 translate-y-4"
                 x-transition:enter-end="opacity-100 translate-y-0">
 
-                <!-- Search Input -->
                 <div class="relative">
                     <div class="flex items-center gap-3 mb-4">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +172,6 @@
                         </button>
                     </div>
 
-                    <!-- Loading Indicator -->
                     <div x-show="isLoading" class="flex justify-center py-8">
                         <div class="flex items-center justify-center space-x-2 text-blue-600">
                             <div class="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.3s]"></div>
@@ -193,7 +180,6 @@
                         </div>
                     </div>
 
-                    <!-- No Results -->
                     <div x-show="!isLoading && searchQuery.length >= 2" 
                         class="py-8 text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
@@ -210,7 +196,6 @@
     </div>
 </div>
 
-<!-- Animations Style -->
 <style>
 @keyframes slideDown {
     0% {
