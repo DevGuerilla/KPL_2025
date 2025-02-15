@@ -1,16 +1,18 @@
 <style>
-    [x-cloak] { display: none !important; }
+    [x-cloak] {
+        display: none !important;
+    }
 </style>
 
 <div class="min-h-screen flex items-center justify-center p-4"
-     x-data="{ show: false }" 
-     x-init="setTimeout(() => show = true, 150)">
+    x-data="{ show: false }"
+    x-init="setTimeout(() => show = true, 150)">
     <div x-cloak
-         x-show="show"
-         x-transition:enter="transition duration-1000 ease-out"
-         x-transition:enter-start="opacity-0 -translate-y-60"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         class="bg-white w-full max-w-6xl rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+        x-show="show"
+        x-transition:enter="transition duration-1000 ease-out"
+        x-transition:enter-start="opacity-0 -translate-y-60"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        class="bg-white w-full max-w-6xl rounded-2xl shadow-lg overflow-hidden border border-gray-200">
         <div class="flex flex-col md:flex-row">
             <div class="w-full md:w-1/2 p-8 lg:p-12">
                 <div class="max-w-md mx-auto">
@@ -25,7 +27,7 @@
                     <?php Flasher::flash(); ?>
 
                     <form action="<?= BASEURL; ?>/auth/doRegister" method="POST" class="space-y-6 mt-8"
-                          x-data="{ 
+                        x-data="{ 
                               loading: false,
                               showPassword: false,
                               showConfirmPassword: false
@@ -33,35 +35,35 @@
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
                             <div class="mt-1 relative">
-                                <input id="username" 
-                                       name="username" 
-                                       type="text" 
-                                       required 
-                                       placeholder="Masukkan username Anda"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                                <input id="username"
+                                    name="username"
+                                    type="text"
+                                    required
+                                    placeholder="Masukkan username Anda"
+                                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
                             </div>
                         </div>
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
                             <div class="mt-1 relative">
-                                <input id="name" 
-                                       name="name" 
-                                       type="text" 
-                                       required 
-                                       placeholder="Masukkan nama lengkap Anda"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                                <input id="name"
+                                    name="name"
+                                    type="text"
+                                    required
+                                    placeholder="Masukkan nama lengkap Anda"
+                                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
                             </div>
                         </div>
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                             <div class="mt-1 relative">
-                                <input id="email" 
-                                       name="email" 
-                                       type="email" 
-                                       required 
-                                       placeholder="Masukkan email Anda"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                                <input id="email"
+                                    name="email"
+                                    type="email"
+                                    required
+                                    placeholder="Masukkan email Anda"
+                                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
                             </div>
                         </div>
 
@@ -69,15 +71,15 @@
                             <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
                             <div class="mt-1 relative">
                                 <input :type="showPassword ? 'text' : 'password'"
-                                       id="password" 
-                                       name="password" 
-                                       required 
-                                       placeholder="Buat kata sandi Anda"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
+                                    id="password"
+                                    name="password"
+                                    required
+                                    placeholder="Buat kata sandi Anda"
+                                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
                                 <button type="button"
-                                        @click="showPassword = !showPassword"
-                                        class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none"
-                                        :class="{ 'opacity-70': !showPassword, 'opacity-100': showPassword }">
+                                    @click="showPassword = !showPassword"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none"
+                                    :class="{ 'opacity-70': !showPassword, 'opacity-100': showPassword }">
                                     <svg x-show="!showPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                     </svg>
@@ -94,15 +96,15 @@
                             <label for="confirm_password" class="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
                             <div class="mt-1 relative">
                                 <input :type="showConfirmPassword ? 'text' : 'password'"
-                                       id="confirm_password" 
-                                       name="confirm_password" 
-                                       required 
-                                       placeholder="Masukkan ulang kata sandi Anda"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    required
+                                    placeholder="Masukkan ulang kata sandi Anda"
+                                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
                                 <button type="button"
-                                        @click="showConfirmPassword = !showConfirmPassword"
-                                        class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none"
-                                        :class="{ 'opacity-70': !showConfirmPassword, 'opacity-100': showConfirmPassword }">
+                                    @click="showConfirmPassword = !showConfirmPassword"
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none"
+                                    :class="{ 'opacity-70': !showConfirmPassword, 'opacity-100': showConfirmPassword }">
                                     <svg x-show="!showConfirmPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                     </svg>
@@ -115,10 +117,10 @@
                         </div>
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
-                            <button type="submit" 
-                                    @click="loading = true"
-                                    class="w-full flex justify-center py-3 px-4 border-0 rounded-lg text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl outline-none"
-                                    :class="{ 'opacity-75 cursor-wait': loading }">
+                            <button type="submit"
+                                @click="loading = true"
+                                class="w-full flex justify-center py-3 px-4 border-0 rounded-lg text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl outline-none"
+                                :class="{ 'opacity-75 cursor-wait': loading }">
                                 <span x-show="!loading">Daftar Sekarang</span>
                                 <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -129,7 +131,7 @@
 
                         <div class="text-center transform transition duration-300 hover:-translate-y-1">
                             <p class="text-sm text-gray-600">
-                                Sudah punya akun? 
+                                Sudah punya akun?
                                 <a href="<?= BASEURL; ?>/auth/login" class="font-medium text-blue-500 hover:text-blue-600 transition-colors duration-300">
                                     Masuk disini
                                 </a>
