@@ -1,3 +1,6 @@
+<?php
+ob_start();
+?>
 <!-- Stats Cards -->
 <div class="space-y-8">
     <div class="mb-8">
@@ -93,20 +96,20 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-3">
-                                    <a href="<?= BASEURL; ?>/dashboard/editpost/<?= $post['id']; ?>" 
-                                       class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <a href="<?= BASEURL; ?>/dashboard/editpost/<?= $post['id_post']; ?>"
+                                        class="text-blue-600 hover:text-blue-800 transition-colors">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
                                     <form action="<?= BASEURL; ?>/dashboard/deletepost" method="POST" class="inline">
-                                        <input type="hidden" name="id" value="<?= $post['id']; ?>">
-                                        <button type="submit" 
-                                                class="text-red-600 hover:text-red-800 transition-colors"
-                                                onclick="return confirm('Are you sure you want to delete this post?')">
+                                        <input type="hidden" name="id" value="<?= $post['id_post']; ?>">
+                                        <button type="submit"
+                                            class="text-red-600 hover:text-red-800 transition-colors"
+                                            onclick="return confirm('Are you sure you want to delete this post?')">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
@@ -120,3 +123,6 @@
         </div>
     </div>
 </div>
+<?php
+$content = ob_get_clean();
+require_once __DIR__ . '/../templates/dashboard.php'; ?>
