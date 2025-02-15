@@ -14,7 +14,7 @@ class Flasher
         if (isset($_SESSION['flash'])) {
             $success = $_SESSION['flash']['success'];
             $message = $_SESSION['flash']['data']['message'];
-            
+
             if ($success) {
                 echo '<div class="mb-4 rounded-lg bg-green-50 p-4">
                         <div class="flex">

@@ -7,7 +7,7 @@
                 <a href="<?= BASEURL; ?>" class="flex items-center text-lg font-semibold text-gray-800">
                     PHP MVC
                 </a>
-                
+
                 <!-- Main nav links -->
                 <div class="hidden md:ml-6 md:flex md:space-x-4">
                     <a href="<?= BASEURL; ?>" class="inline-flex items-center px-3 py-2 text-gray-600 hover:text-gray-900">
@@ -22,17 +22,21 @@
             <!-- Right side -->
             <div class="flex items-center">
                 <span class="text-gray-600 mr-4">
-                    Hello, <?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?>!
+
+                    Hello, <?= isset($_SESSION['isLoggedIn']) ? htmlspecialchars($_SESSION['myProfile']['username']) : 'Guest'; ?>!
                 </span>
 
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="<?= BASEURL; ?>/auth/logout" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
-                        Logout
-                    </a>
+                <?php if (isset($_SESSION['isLoggedIn'])): ?>
+
+                    <form action="<?= BASEURL; ?>/auth/logout" method="post">
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                            Logout
+                        </button>
+                    </form>
                 <?php else: ?>
-                    <a href="<?= BASEURL; ?>/auth/login" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <a href="<?= BASEURL; ?>/auth/login"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         Login
                     </a>
                 <?php endif; ?>
@@ -40,10 +44,10 @@
 
             <!-- Mobile menu button -->
             <div class="flex items-center md:hidden">
-                <button type="button" 
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-                        aria-controls="mobile-menu" 
-                        aria-expanded="false">
+                <button type="button"
+                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                    aria-controls="mobile-menu"
+                    aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
                     <!-- Icon when menu is closed -->
                     <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

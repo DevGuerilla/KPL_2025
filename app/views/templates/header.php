@@ -7,7 +7,7 @@
     <title><?= $data['judul'] ?? 'Home'; ?> | <?= APPNAME; ?></title>
     <link rel="stylesheet" href="<?= BASEURL; ?>/css/index.css">
     <script src="//unpkg.com/alpinejs" defer></script>
-    
+
 </head>
 
 <body>
