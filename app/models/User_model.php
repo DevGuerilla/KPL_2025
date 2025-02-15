@@ -12,19 +12,28 @@ class User_model
 
   public function getAllUser()
   {
-    $query = 'SELECT u.username, u.name, u.email, u.profile_picture_url 
-              FROM ' . $this->table . ' u';
+    $query = 'SELECT * FROM ' . $this->table;
     $this->db->query($query);
     return $this->db->resultSet();
   }
 
-  public function getUserById($id)
+  public function getUserByUsername($username)
   {
-    $query = 'SELECT u.username, u.name, u.email, u.profile_picture_url 
-              FROM ' . $this->table . ' u 
-              WHERE u.id_user = :id';
+    $query = 'SELECT * FROM ' . $this->table . ' u WHERE u.username = :username';
     $this->db->query($query);
-    $this->db->bind('id', $id);
+    $this->db->bind('username', $username);
     return $this->db->single();
+  }
+
+  public function createUser($data)
+  {
+    $query = "INSERT INTO user VALUES(null, :username, :name, :email, :password)";
+    $this->db->query($query);
+    $this->db->bind('username', $data['username']);
+    $this->db->bind('name', $data['name']);
+    $this->db->bind('email', $data['email']);
+    $this->db->bind('password', $data['password']);
+    $this->db->execute();
+    return $this->db->rowCount();
   }
 }
