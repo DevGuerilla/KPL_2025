@@ -1,16 +1,17 @@
-<?php 
+<?php
 
 class Post_model
 {
   private $table = 'post';
   private $db;
 
-  private function __construct()
+  public function __construct()
   {
     $this->db = new Database();
   }
 
-  public function getAllPost(){
+  public function getAllPost()
+  {
     $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
               FROM ' . $this->table . ' p
               JOIN user u
@@ -19,7 +20,8 @@ class Post_model
     return $this->db->resultSet();
   }
 
-  public function getPostById($id){
+  public function getPostById($id)
+  {
     $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
               FROM ' . $this->table . ' p
               JOIN user u

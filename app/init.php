@@ -12,8 +12,3 @@ require_once 'core/Database.php';
 require_once 'config/config.php';
 // Flasher
 require_once 'core/Flasher.php';
-
-
-
-// Models
-require_once 'models/Auth_Model.php';
