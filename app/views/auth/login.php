@@ -5,7 +5,7 @@
 </style>
 
 <div class="min-h-screen flex items-center justify-center p-4"
-    x-data="{ show: false }"
+    x-data="{ show: true}"
     x-init="setTimeout(() => show = true, 150)">
     <div x-cloak
         x-show="show"
@@ -14,10 +14,8 @@
         x-transition:enter-end="opacity-100 translate-y-0"
         class="bg-white w-full max-w-6xl rounded-2xl shadow-lg overflow-hidden border border-gray-200">
         <div class="flex flex-col md:flex-row">
-            <!-- Form Section -->
             <div class="w-full md:w-1/2 p-8 lg:p-12">
                 <div class="max-w-md mx-auto">
-                    <!-- Logo dan Header -->
                     <div class="text-center md:text-left">
                         <a href="<?= BASEURL; ?>">
                             <img src="<?= BASEURL; ?>/img/logo_item.png" alt="Uptime Logo" class="mb-3 w-auto mx-auto md:mx-0 transform hover:scale-105 transition-transform duration-500">
@@ -28,10 +26,8 @@
 
                     <?php Flasher::flash(); ?>
 
-                    <!-- Form -->
                     <form action="<?= BASEURL; ?>/auth/doLogin" method="POST" class="space-y-6 mt-8"
                         x-data="{ loading: false }">
-                        <!-- Username Field -->
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
                             <div class="mt-1 relative">
@@ -44,7 +40,6 @@
                             </div>
                         </div>
 
-                        <!-- Password Field -->
                         <div class="transform transition duration-300 hover:-translate-y-1"
                             x-data="{ showPassword: false }">
                             <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
@@ -70,7 +65,6 @@
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <button type="submit"
                                 @click="loading = true"
@@ -84,7 +78,6 @@
                             </button>
                         </div>
 
-                        <!-- Register Link -->
                         <div class="text-center transform transition duration-300 hover:-translate-y-1">
                             <p class="text-sm text-gray-600">
                                 Belum punya akun?
@@ -97,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- Welcome Section -->
             <div class="w-full md:w-1/2 bg-gradient-to-br from-blue-500 to-blue-600 p-8 lg:p-12 flex items-center">
                 <div class="max-w-md mx-auto text-center text-white">
                     <h2 class="text-2xl md:text-3xl font-bold mb-4">Selamat Datang di Blog Campus!</h2>

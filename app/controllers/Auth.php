@@ -47,8 +47,8 @@ class Auth extends Controller
 
     public function register()
     {
-        $this->view('templates/header');
         $this->view('auth/register');
+        $this->view('templates/header');
         $this->view('templates/footer');
     }
 
