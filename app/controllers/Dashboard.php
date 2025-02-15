@@ -20,7 +20,9 @@ class Dashboard extends Controller
 
     public function posts()
     {
-        $data = $this->postModel->getAllPost();
+        $data = [
+            'posts' => $this->postModel->getAllPost()
+        ];
         $this->view('templates/header');
         $this->view('dashboard/posts', $data);
         $this->view('templates/footer');

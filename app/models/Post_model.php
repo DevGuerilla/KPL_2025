@@ -12,7 +12,7 @@ class Post_model
 
   public function getAllPost()
   {
-    $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url
+    $query = 'SELECT p.title, p.content, p.image, u.username, u.profile_picture_url, p.created_at, p.deleted_at
               FROM ' . $this->table . ' p
               JOIN user u
               ON p.id_user =  u.id_user';
