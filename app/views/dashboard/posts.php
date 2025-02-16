@@ -2,15 +2,15 @@
 ob_start();
 
 $publishedCount = 0;
-$draftCount = 0;
+$deletedCount = 0;
 $totalViews = 0;
 
 foreach ($data['posts'] as $post) {
     // Count published and draft posts
-    if (isset($post['status']) && $post['status'] === 'published') {
+    if ($post['deleted_at'] == null) {
         $publishedCount++;
     } else {
-        $draftCount++;
+        $deletedCount++;
     }
     $totalViews += isset($post['views']) ? $post['views'] : 0;
 }
@@ -60,14 +60,14 @@ foreach ($data['posts'] as $post) {
 
         <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300">
             <div class="flex items-center">
-                <div class="p-3 bg-orange-50 rounded-xl">
-                    <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                <div class="p-3 bg-red-50 rounded-xl">
+                    <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Draft</h3>
-                    <p class="text-2xl font-bold text-gray-900"><?= $draftCount ?></p>
+                    <h3 class="text-sm font-medium text-gray-500">Dihapus</h3>
+                    <p class="text-2xl font-bold text-gray-900"><?= $deletedCount ?></p>
                 </div>
             </div>
         </div>
@@ -138,13 +138,14 @@ foreach ($data['posts'] as $post) {
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <?php if (isset($post['status']) && $post['status'] === 'published') : ?>
+
+                                <?php if ($post['deleted_at'] == null) : ?>
                                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                         Terbit
                                     </span>
                                 <?php else : ?>
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                        Draft
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Dihapus tanggal <?= Helper::date($post['deleted_at']); ?>
                                     </span>
                                 <?php endif; ?>
                             </td>
@@ -160,14 +161,25 @@ foreach ($data['posts'] as $post) {
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
-                                    <form action="<?= BASEURL; ?>/dashboard/deletepost" method="POST" class="inline">
-                                        <input type="hidden" name="id" value="<?= $post['id_post']; ?>">
-                                        <button type="submit" class="text-red-600 hover:text-red-800 transition-colors cursor-pointer" onclick="return confirm('Apakah Anda yakin ingin menghapus artikel ini?')">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    <?php if ($post['deleted_at'] == null) : ?>
+                                        <form action="<?= BASEURL; ?>/dashboard/deletepost" method="POST" class="inline">
+                                            <input type="hidden" name="id" value="<?= $post['id_post']; ?>">
+                                            <button type="submit" class="text-red-600 hover:text-red-800 transition-colors cursor-pointer" onclick="return confirm('Apakah Anda yakin ingin menghapus artikel ini?')">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    <?php else : ?>
+                                        <form action="<?= BASEURL; ?>/dashboard/recoverpost" method="POST" class="inline">
+                                            <input type="hidden" name="id" value="<?= $post['id_post']; ?>">
+                                            <button type="submit" class="text-green-600 hover:text-green-800 transition-colors cursor-pointer" onclick="return confirm('Apakah Anda yakin ingin memulihkan artikel ini?')">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

@@ -151,6 +151,7 @@
 
     <div x-show="searchOpen"
         x-cloak
+        @keydown.window.ctrl.k.prevent="searchOpen = true"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -160,8 +161,8 @@
         @keydown.escape="searchOpen = false"
         class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
 
-        <div class="container mx-auto px-4 pt-28" @click.away="searchOpen = false">
-            <div class="bg-white rounded-2xl p-6 shadow-xl max-w-2xl mx-auto transform transition-all"
+        <div class="container mx-auto px-4 pt-16 sm:pt-28" @click.away="searchOpen = false">
+            <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-xl max-w-2xl mx-auto transform transition-all"
                 x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 translate-y-4"
                 x-transition:enter-end="opacity-100 translate-y-0">
@@ -175,9 +176,31 @@
                         <input type="text"
                             x-ref="searchInput"
                             x-model="searchQuery"
-                            @input.debounce.300ms="isLoading = true; setTimeout(() => isLoading = false, 1000)"
-                            class="w-full text-sm outline-none placeholder-gray-400"
-                            placeholder="Cari blog atau artikel...">
+                            @input.debounce.300ms="
+                                if(searchQuery.length >= 2) {
+                                    isLoading = true;
+                                    const encodedQuery = encodeURIComponent(searchQuery);
+                                    fetch(`<?= BASEURL ?>/posts/search/${encodedQuery}`)
+                                        .then(response => {
+                                            if (!response.ok) throw new Error('Network response was not ok');
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            searchResults = Array.isArray(data.data) ? data.data : [];
+                                            isLoading = false;
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            searchResults = [];
+                                            isLoading = false;
+                                        });
+                                } else {
+                                    searchResults = [];
+                                }
+                            "
+                            class="w-full text-sm outline-none border border-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-lg px-4 py-3 transition-all duration-300"
+                            placeholder="Cari blog atau artikel... (Ctrl + K)">
+                        <kbd class="hidden md:inline-flex items-center px-3 py-1.5 text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-200 rounded-lg shadow-sm">⌘K</kbd>
                         <button type="button"
                             @click="searchOpen = false"
                             class="p-2 hover:bg-gray-100 rounded-xl transition-all duration-300">
@@ -189,27 +212,89 @@
                     </div>
 
                     <div x-show="isLoading" class="flex justify-center py-8">
-                        <div class="flex items-center justify-center space-x-2 text-blue-600">
-                            <div class="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.3s]"></div>
-                            <div class="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.15s]"></div>
-                            <div class="w-2 h-2 rounded-full bg-blue-600 animate-bounce"></div>
+                        <div class="animate-pulse flex space-x-4">
+                            <div class="rounded-lg bg-gray-200 h-24 w-24"></div>
+                            <div class="flex-1 space-y-4">
+                                <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                                <div class="space-y-2">
+                                    <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-2/3"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div x-show="!isLoading && searchQuery.length >= 2"
-                        class="py-8 text-center">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p class="text-gray-500 text-sm">Tidak ada hasil yang ditemukan untuk pencarian ini.</p>
+                        class="mt-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <template x-if="searchResults && searchResults.length > 0">
+                            <div class="space-y-4">
+                                <template x-for="result in searchResults" :key="result.id_post">
+                                    <a :href="`<?= BASEURL ?>/posts/detail/${result.id_post}`"
+                                        class="block bg-white p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg border border-gray-100">
+                                        <div class="flex flex-col sm:flex-row gap-4">
+                                            <div class="w-full sm:w-24 h-48 sm:h-24 bg-gray-100 rounded-xl overflow-hidden">
+                                                <img :src="`<?= BASEURL ?>/img/posts/${result.thumbnail}`"
+                                                    class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500">
+                                            </div>
+                                            <div class="flex-1">
+                                                <h3 x-text="result.title"
+                                                    class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600"></h3>
+                                                <p x-text="result.content"
+                                                    class="text-sm text-gray-600 line-clamp-2 mb-3"></p>
+                                                <div class="flex items-center gap-2 flex-wrap">
+                                                    <template x-for="tag in result.tags" :key="tag">
+                                                        <span class="px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg shadow-sm hover:shadow-md hover:bg-blue-100 transition-all duration-300"
+                                                            x-text="tag"></span>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </template>
+
+                        <template x-if="!searchResults || searchResults.length === 0">
+                            <div class="py-12 text-center">
+                                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <p class="text-gray-500 text-lg">Tidak ada hasil yang ditemukan untuk pencarian ini.</p>
+                                <p class="text-gray-400 text-sm mt-2">Coba kata kunci lain</p>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 20px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.8);
+        }
+    </style>
 </div>
 
 <style>
