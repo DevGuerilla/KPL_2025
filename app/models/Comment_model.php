@@ -27,7 +27,7 @@ class Comment_model
     return $this->db->resultSet();
   }
 
-  public function addComment(Int $id, Int $user, String $username, String $comment)
+  public function addComment(Int $id,  $user, String $username, String $comment)
   {
     $query = 'INSERT INTO ' . $this->table . ' (id_post, id_user, username, comment, created_at, updated_at) VALUES (:id, :user, :username, :comment, :created_at, :updated_at)';
     $this->db->query($query);

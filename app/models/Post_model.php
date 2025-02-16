@@ -121,5 +121,36 @@ class Post_model
 
     return $data;
   }
-}
 
+  public function getPostTagsById(Int $id)
+  {
+    $tag = new Tags_model;
+    $data = [
+      'post' => $this->getPostById($id),
+      'tags' => $tag->getAllTagsByPostId($id),
+    ];
+
+    return $data;
+  }
+
+  // get all post with they tags
+  public function getAllPostTagsById()
+  {
+    $tag = new Tags_model;
+    $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
+              FROM ' . $this->table . ' p
+              JOIN user u
+              ON p.id_user =  u.id_user
+              WHERE p.deleted_at IS NULL';
+    $this->db->query($query);
+    $posts = $this->db->resultSet();
+    $data = [];
+    foreach ($posts as $post) {
+      $data[] = [
+        'post' => $post,
+        'tags' => $tag->getAllTagsByPostId($post['id_post']),
+      ];
+    }
+    return $data;
+  }
+}

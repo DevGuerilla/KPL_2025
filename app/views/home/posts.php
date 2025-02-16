@@ -35,7 +35,7 @@
                 <!-- Post Card Template -->
                 <article class="group bg-white backdrop-blur-lg bg-opacity-90 rounded-3xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden border border-gray-100/50">
                     <div class="relative overflow-hidden rounded-t-3xl">
-                        <img src="https://source.unsplash.com/random/800x600?web" alt="Post Image"
+                        <img src="<?= BASEURL . '/img/posts/' . $post['post']['image']; ?>" alt="Post Image"
                             class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out">
                         <div class="absolute top-4 right-4 bg-black/40 backdrop-blur-md rounded-full px-4 py-1.5 
                                 transform group-hover:translate-x-1 transition-all duration-500">
@@ -52,27 +52,27 @@
                                        group-hover:scale-110 transition-transform duration-300"></div>
                             </div>
                             <div class="transform group-hover:translate-x-2 transition-transform duration-300">
-                                <p class="text-sm font-semibold text-gray-900"><?= $post['name']; ?></p>
+                                <p class="text-sm font-semibold text-gray-900"><?= $post['post']['name']; ?></p>
                                 <p class="text-xs text-gray-500">Mar 15, 2024</p>
                             </div>
                         </div>
 
                         <h2 class="font-poppins font-bold text-xl mb-3 text-gray-900 group-hover:text-blue-600 transition-all duration-300 ease-out">
-                            <a href="#" class="line-clamp-2 hover:text-blue-700"><?= $post['title']; ?></a>
+                            <a href="#" class="line-clamp-2 hover:text-blue-700"><?= $post['post']['title']; ?></a>
                         </h2>
 
                         <p class="text-gray-600 text-sm mb-6 line-clamp-3 group-hover:text-gray-700 transition-colors duration-300">
-                            <?= $post['content']; ?>
+                            <?= Helper::excerpt($post['post']['content'], 150); ?>
                         </p>
 
                         <div class="flex items-center justify-between">
                             <div class="flex flex-wrap gap-2">
-                                <span class="px-4 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-full 
-                                       transform hover:scale-105 hover:bg-blue-100 transition-all duration-300">Web Dev</span>
-                                <span class="px-4 py-1.5 text-xs font-medium bg-purple-50 text-purple-600 rounded-full 
-                                       transform hover:scale-105 hover:bg-purple-100 transition-all duration-300">Next.js</span>
+                                <?php foreach ($post['tags'] as $tag) : ?>
+                                    <span class="px-4 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-full 
+                                       transform hover:scale-105 hover:bg-blue-100 transition-all duration-300"><?= $tag['tag_name']; ?></span>
+                                <?php endforeach; ?>
                             </div>
-                            <a href="<?= BASEURL; ?>/posts/detail/<?= $post['id_post']; ?>" class="group inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-semibold 
+                            <a href="<?= BASEURL; ?>/posts/detail/<?= $post['post']['id_post']; ?>" class="group inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-semibold 
                                      px-4 py-2 rounded-full hover:bg-blue-50 transition-all duration-300">
                                 Read more
                                 <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-2 transition-transform duration-300"
@@ -81,6 +81,7 @@
                                 </svg>
                             </a>
                         </div>
+
                     </div>
                 </article>
             <?php endforeach; ?>

@@ -15,7 +15,7 @@ class Posts extends Controller
     public function index()
     {
         $data['judul'] = 'Posts';
-        $data['posts'] = $this->postModel->getAllPost();
+        $data['posts'] = $this->postModel->getAllPostTagsById();
         // head
         $this->view('templates/header', $data);
 
@@ -33,7 +33,7 @@ class Posts extends Controller
 
             if (isset($_POST['comment']) && isset($_POST['username'])) {
                 $comment = htmlspecialchars(trim($_POST['comment']), ENT_QUOTES, 'UTF-8');
-                $idUser = htmlspecialchars($_SESSION['myProfile']['id_user'], ENT_QUOTES, 'UTF-8');
+                $idUser = isset($_POST['isLoggedIn']) ? htmlspecialchars($_SESSION['myProfile']['id_user']) : null;
                 $username = isset($_POST['isLoggedIn']) ? htmlspecialchars($_SESSION['myProfile']['username']) : htmlspecialchars($_POST['username']);
                 $this->commentModel->addComment($data['post']['post']['id_post'], $idUser, $username, $comment);
                 Flasher::setFlash(true, ['message' => 'Komentar telah disubmit!']);

@@ -18,8 +18,8 @@
     <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         <!-- Post Image -->
         <div class="relative h-[400px] w-full overflow-hidden">
-            <img src="/api/placeholder/1200/800" alt="Post cover" 
-                 class="w-full h-full object-cover">
+            <img src="/api/placeholder/1200/800" alt="Post cover"
+                class="w-full h-full object-cover">
         </div>
 
         <!-- Content Container -->
@@ -49,17 +49,17 @@
                 </div>
                 <div class="flex items-center gap-2 text-gray-500 text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <?= htmlspecialchars($data['post']['post']['created_at']); ?>
                 </div>
             </div>
 
             <!-- Content -->
-            <div class="prose max-w-none text-gray-600 mb-8">
+            <article class="prose prose-slate text-justify leading-10 max-w-none text-gray-600 mb-8">
                 <?= $data['post']['post']['content']; ?>
-            </div>
+            </article>
 
             <!-- Tags -->
             <div class="flex flex-wrap gap-2 mb-6 pt-4 border-t border-gray-100">
@@ -73,11 +73,11 @@
 
             <!-- Actions -->
             <div class="flex justify-between items-center py-4 border-t border-gray-100">
-                <button @click="showComments = !showComments" 
-                        class="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+                <button @click="showComments = !showComments"
+                    class="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     <span>Komentar</span>
                     <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-medium ml-1">
@@ -86,26 +86,26 @@
                 </button>
                 <button class="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                     </svg>
                     <span>Bagikan</span>
                 </button>
             </div>
 
             <!-- Enhanced Comments Section -->
-            <div x-show="showComments" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 transform -translate-y-4"
-                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                 class="mt-8 pt-8 border-t border-gray-100">
-                
+            <div x-show="showComments"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform -translate-y-4"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
+                class="mt-8 pt-8 border-t border-gray-100">
+
                 <!-- Comments Header -->
                 <div class="flex items-center justify-between mb-8">
                     <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                         <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         Diskusi
                     </h3>
@@ -133,24 +133,24 @@
                                 </div>
                                 <form method="POST" action="<?= BASEURL; ?>/posts/detail/<?= $data['post']['post']['id_post']; ?>" class="mt-2">
                                     <?php if (isset($_SESSION['isLoggedIn'])): ?>
-                                        <input type="hidden" name="username" value="<?= htmlspecialchars($_SESSION['myProfile']['username']); ?>">
+                                        <input type="hidden" name="username" class="hidden" value="<?= htmlspecialchars($_SESSION['myProfile']['username']); ?>">
                                     <?php else: ?>
                                         <input type="hidden" name="username" value="Tamu">
                                     <?php endif; ?>
-                                    
+
                                     <textarea name="comment" rows="3" required
-                                            class="w-full p-4 bg-white border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 
+                                        class="w-full p-4 bg-white border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 
                                                    focus:border-transparent transition-all resize-none outline-none shadow-sm mb-3"
-                                            placeholder="Bagikan pendapat Anda..."></textarea>
-                                    
+                                        placeholder="Bagikan pendapat Anda..."></textarea>
+
                                     <div class="flex justify-end">
                                         <button type="submit"
-                                                class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 
+                                            class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 
                                                        transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-lg">
                                             <span>Kirim</span>
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                             </svg>
                                         </button>
                                     </div>
@@ -173,21 +173,21 @@
                                 <div class="flex-1">
                                     <div class="flex justify-between items-center mb-3">
                                         <div class="flex items-center gap-3">
-                                                <span class="font-medium text-gray-900">
-                                                    <?= htmlspecialchars($comment['username']); ?>
-                                                </span>
+                                            <span class="font-medium text-gray-900">
+                                                <?= htmlspecialchars($comment['username']); ?>
+                                            </span>
                                             <span class="text-gray-500 text-sm flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                <?= htmlspecialchars($comment['created_at']); ?>
+                                                <?= htmlspecialchars(Helper::timeAgo($comment['created_at'])); ?>
                                             </span>
                                         </div>
                                     </div>
                                     <div class="pl-4 border-l-2 border-blue-100 group-hover:border-blue-300 transition-all">
                                         <p class="text-slate-700 transition-all text-lg">
-                                        <?= htmlspecialchars($comment['comment']); ?>
+                                            <?= htmlspecialchars($comment['comment']); ?>
                                         </p>
                                     </div>
                                 </div>
@@ -203,18 +203,18 @@
     <div class="max-w-4xl mx-auto mt-12">
         <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
             Artikel Terkait
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <?php foreach ($data['post']['randomPosts'] as $post) : ?>
-                <a href="<?= BASEURL; ?>/posts/detail/<?= $post['id_post']; ?>" 
-                   class="group block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                <a href="<?= BASEURL; ?>/posts/detail/<?= $post['id_post']; ?>"
+                    class="group block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                     <div class="relative h-48 overflow-hidden">
                         <img src="/api/placeholder/400/200" alt="Related Post"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                     </div>
                     <div class="p-6">
@@ -235,8 +235,8 @@
                             </div>
                             <span class="text-gray-500 text-sm flex items-center gap-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <?= htmlspecialchars($post['created_at']); ?>
                             </span>
@@ -250,14 +250,16 @@
 
 <!-- Auto scroll to comments after submission -->
 <?php if (isset($_SESSION['flash'])): ?>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const commentsSection = document.querySelector('[x-show="showComments"]');
-        if (commentsSection) {
-            commentsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const commentsSection = document.querySelector('[x-show="showComments"]');
+            if (commentsSection) {
+                commentsSection.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    </script>
 <?php endif; ?>
 
 <?php include_once __DIR__ . '/../templates/footer.php'; ?>

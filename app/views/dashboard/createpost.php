@@ -10,9 +10,9 @@ ob_start();
         </div>
     </div>
     <div x-data="{ 
-        title: '<?= isset($data['title']) ? $data['title'] : ''; ?>', 
+        title: '<?= isset($data['post']['title']) ? $data['post']['title'] : ''; ?>', 
         isPreview: false,
-        imageUrl: '<?= isset($data['image']) ? BASEURL . '/img/posts/' . $data['image'] : ''; ?>',
+        imageUrl: '<?= isset($data['post']['image']) ? BASEURL . '/img/posts/' . $data['post']['image'] : ''; ?>',
         fileChosen(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -30,8 +30,8 @@ ob_start();
         }
     }">
         <!-- Main Form -->
-        <form action="<?= BASEURL . (isset($data['id_post']) ? '/dashboard/doEditPost' : '/dashboard/doCreatePost'); ?>" enctype="multipart/form-data" id="postForm" method="post" class="space-y-4" x-show="!isPreview">
-            <input type="hidden" name="id_post" value="<?= isset($data['id_post']) ? $data['id_post'] : ''; ?>">
+        <form action="<?= BASEURL . (isset($data['post']['id_post']) ? '/dashboard/doEditPost' : '/dashboard/doCreatePost'); ?>" enctype="multipart/form-data" id="postForm" method="post" class="space-y-4" x-show="!isPreview">
+            <input type="hidden" name="id_post" value="<?= isset($data['post']['id_post']) ? $data['post']['id_post'] : ''; ?>">
             <!-- First Row: Title and Tags (50-50 split) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <!-- Title Input (Left 50%) -->
@@ -48,8 +48,8 @@ ob_start();
                 <!-- Tags Input (Right 50%) -->
                 <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
                     <label class="block text-md font-medium text-gray-700 mb-1">Tags</label>
-                    <input id="tags" type="text" name="tags" 
-                        class="w-full text-lg border-0 border-b border-gray-200 focus:border-blue-500 focus:ring-0 bg-transparent pb-1 rounded-lg" 
+                    <input id="tags" type="text" name="tags"
+                        class="w-full text-lg border-0 border-b border-gray-200 focus:border-blue-500 focus:ring-0 bg-transparent pb-1 rounded-lg"
                         placeholder="Tambahkan tags...">
                 </div>
             </div>
@@ -61,7 +61,7 @@ ob_start();
                     <label class="block text-md font-medium text-gray-700 mb-2">Gambar Utama</label>
 
                     <!-- Image Preview -->
-                    <input type="text" name="old_image" value="<?= isset($data['image']) ? $data['image'] : ''; ?>" class="hidden">
+                    <input type="text" name="old_image" value="<?= isset($data['post']['image']) ? $data['post']['image'] : ''; ?>" class="hidden">
                     <template x-if="imageUrl">
                         <div class="relative group mb-2">
                             <img :src="imageUrl"
@@ -100,8 +100,8 @@ ob_start();
                 <!-- Content Editor (Right 50%) -->
                 <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
                     <label class="block text-md font-medium text-gray-700 mb-2">Konten Artikel</label>
-                    <input id="content" type="hidden" name="content" value="<?= isset($data['content']) ? $data['content'] : ''; ?>">
-                    <trix-editor input="content" class="prose max-w-none h-[250px] bg-white rounded-lg"></trix-editor>
+                    <input id="content" type="hidden" name="content" value="<?= isset($data['post']['content']) ? $data['post']['content'] : ''; ?>">
+                    <trix-editor input="content" class="prose prose-slate text-justify leading-10 max-w-none h-[250px] bg-white rounded-lg" class="prose prose-slate"></trix-editor>
                 </div>
             </div>
 
@@ -133,7 +133,8 @@ ob_start();
 
     trix-editor {
         @apply border border-gray-200 rounded-b-lg px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-transparent;
-        height: calc(250px - 3rem) !important;
+        min-height: calc(250px - 3rem) !important;
+        height: auto !important
     }
 
     /* Custom Tagify Styling */
@@ -175,7 +176,14 @@ ob_start();
             closeOnSelect: false
         }
     });
-
+    // set tagify value if isset $data['post'] with foreach to $data['tags']
+    <?php if (isset($data['post'])) : ?>
+        <?php foreach ($data['tags'] as $tag) : ?>
+            tagify.addTags([{
+                value: '<?= $tag['tag_name']; ?>'
+            }]);
+        <?php endforeach; ?>
+    <?php endif; ?>
     // Prevent file attachments in Trix
     addEventListener("trix-file-accept", function(event) {
         event.preventDefault();
