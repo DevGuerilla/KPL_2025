@@ -4,6 +4,10 @@ node_modules/
 .env
 
 public/img/posts/
+<<<<<<< HEAD
 public/img/users/
 
 # git ignore 
+=======
+public/img/users/
+>>>>>>> 8e7e39cc271f7a65b3cbe82b8d908036ec2033ce
