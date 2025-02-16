@@ -14,4 +14,4 @@
 
 </head>
 
-<body>
+<body class="font-poppins">
