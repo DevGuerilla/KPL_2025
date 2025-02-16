@@ -69,7 +69,7 @@ class Dashboard extends Controller
     public function posts()
     {
         $data = [
-            'posts' => $this->postModel->getAllPost()
+            'posts' => $this->postModel->getRecentPostByUserId($_SESSION['myProfile']['id_user']),
         ];
         $this->view('templates/header');
         $this->view('dashboard/posts', $data);
@@ -145,6 +145,16 @@ class Dashboard extends Controller
             Flasher::setFlash(true, ['message' => 'Post berhasil dihapus!']);
         } else {
             Flasher::setFlash(false, ['message' => 'Post gagal dihapus!']);
+        }
+
+        header('Location: ' . BASEURL . '/dashboard/posts');
+    }
+    public function recoverpost()
+    {
+        if ($this->postModel->recoverPost($_POST['id']) > 0) {
+            Flasher::setFlash(true, ['message' => 'Post berhasil direcover!']);
+        } else {
+            Flasher::setFlash(false, ['message' => 'Post gagal direcover!']);
         }
 
         header('Location: ' . BASEURL . '/dashboard/posts');

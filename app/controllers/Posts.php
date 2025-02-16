@@ -54,6 +54,11 @@ class Posts extends Controller
 
     public function search(String $keyword)
     {
-        var_dump($this->postModel->getPostByKeywordAndTags($keyword));
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $this->postModel->getPostByKeywordAndTags($keyword)
+        ]);
+        exit;
     }
 }

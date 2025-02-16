@@ -50,4 +50,13 @@ class Helper
       return $year . 't yang lalu';
     }
   }
+
+
+  // strtime date with humanize in indonesia format "23 Sep 2024 12:00 WIB"
+  public static function date(String $datetime)
+  {
+    $date = date_create($datetime);
+    $date = date_format($date, 'd M Y H:i');
+    return $date . ' WIB';
+  }
 }

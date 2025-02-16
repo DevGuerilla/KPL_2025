@@ -24,12 +24,23 @@ class Post_model
     return $this->db->resultSet();
   }
 
+  public function getAllPostSoftDelete()
+  {
+    $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
+              FROM ' . $this->table . ' p
+              JOIN user u
+              ON p.id_user =  u.id_user';
+    $this->db->query($query);
+    return $this->db->resultSet();
+  }
+
   public function getAllPostRandom(Int $limit)
   {
     $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
               FROM ' . $this->table . ' p
               JOIN user u
               ON p.id_user =  u.id_user
+               WHERE p.deleted_at IS NULL
               ORDER BY RAND()
               LIMIT :limit';
     $this->db->query($query);
@@ -39,11 +50,11 @@ class Post_model
 
   public function getPostById(Int $id)
   {
-    $query = 'SELECT p.id_post,p.title, p.content, p.image, p.created_at, u.username, u.name, u.profile_picture_url
+    $query = 'SELECT p.id_post,p.title, p.content, p.image, p.created_at, p.updated_at, u.username, u.name, u.profile_picture_url
               FROM ' . $this->table . ' p
               JOIN user u
               ON p.id_user =  u.id_user
-              WHERE p.id_post = :id';
+              WHERE p.id_post = :id AND p.deleted_at IS NULL';
     $this->db->query($query);
     $this->db->bind('id', $id);
     return $this->db->single();
@@ -64,7 +75,7 @@ class Post_model
       $this->db->bind('id_user', $data['id_user']);
       $this->db->bind('created_at', date("Y-m-d H:i:s"));
       $this->db->bind('updated_at', date("Y-m-d H:i:s"));
-      
+
       $this->db->execute();
 
       $postId = $this->db->lastInsertId();
@@ -87,7 +98,7 @@ class Post_model
     $this->db->beginTransaction();
     $modelTag = new Tags_model;
 
-    try{
+    try {
       $query = 'UPDATE post
               SET title = :title, content = :content, image = :image, updated_at = :updated_at
               WHERE id_post = :id_post';
@@ -127,13 +138,25 @@ class Post_model
     return $this->db->rowCount();
   }
 
+  public function recoverPost($id)
+  {
+    $query = 'UPDATE post
+              SET deleted_at = null
+              WHERE id_post = :id_post';
+    $this->db->query($query);
+    $this->db->bind('id_post', $id);
+
+    $this->db->execute();
+    return $this->db->rowCount();
+  }
+
   public function getPostByKeywordAndTags(string $keyword)
   {
     $query = 'SELECT p.id_post, p.title, p.content, p.created_at, p.image, u.username, u.name, u.profile_picture_url
                 FROM ' . $this->table . ' p
                 JOIN user u ON p.id_user = u.id_user
                 LEFT JOIN tags t ON p.id_post = t.id_post
-                WHERE (p.title LIKE :keyword OR t.tag_name LIKE :keyword)';
+                WHERE (p.title LIKE :keyword OR t.tag_name LIKE :keyword) AND p.deleted_at IS NULL';
 
     $this->db->query($query);
     $this->db->bind('keyword', '%' . $keyword . '%');
