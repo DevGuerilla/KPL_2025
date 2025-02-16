@@ -6,6 +6,7 @@ $draftCount = 0;
 $totalViews = 0;
 
 foreach ($data['posts'] as $post) {
+    // Count published and draft posts
     if (isset($post['status']) && $post['status'] === 'published') {
         $publishedCount++;
     } else {
@@ -28,7 +29,7 @@ foreach ($data['posts'] as $post) {
         </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300">
             <div class="flex items-center">
                 <div class="p-3 bg-blue-50 rounded-xl">
@@ -71,7 +72,7 @@ foreach ($data['posts'] as $post) {
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300">
+        <!-- <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300">
             <div class="flex items-center">
                 <div class="p-3 bg-purple-50 rounded-xl">
                     <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,7 +85,7 @@ foreach ($data['posts'] as $post) {
                     <p class="text-2xl font-bold text-gray-900"><?= number_format($totalViews) ?></p>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -132,9 +133,7 @@ foreach ($data['posts'] as $post) {
                                     <?php endif; ?>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900"><?= htmlspecialchars($post['title']); ?></div>
-                                        <?php if (isset($post['content'])) : ?>
-                                            <div class="text-sm text-gray-500 truncate max-w-xs"><?= htmlspecialchars(substr($post['content'], 0, 60)); ?>...</div>
-                                        <?php endif; ?>
+
                                     </div>
                                 </div>
                             </td>
