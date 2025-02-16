@@ -25,7 +25,7 @@
 
                 <div class="flex items-center gap-6">
                     <button @click="searchOpen = true"
-                        class="p-2.5 hover:bg-gray-100 rounded-full transition-all duration-300 hover:scale-110">
+                        class="p-2.5 hover:bg-gray-100 rounded-full transition-all duration-300 hover:scale-110 cursor-pointer">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -62,7 +62,7 @@
                         }
                     }">
                         <button @click="toggleDropdown()"
-                            class="relative flex items-center gap-3 p-2.5 hover:bg-gray-100 rounded-xl transition-all duration-300 group">
+                            class="relative flex items-center gap-3 p-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition-all duration-300 group">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full overflow-hidden ring-2 ring-white shadow-lg transition-all duration-300 group-hover:shadow-blue-200">
                                     <div class="w-full h-full flex items-center justify-center text-white font-medium">
@@ -93,7 +93,7 @@
                             style="display: none;">
                             
                             <div class="p-2 space-y-1">
-                                <a href="<?= BASEURL; ?>/profile" 
+                                <a href="<?= BASEURL; ?>/dashboard" 
                                     class="flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-300 group">
                                     <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors duration-300">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

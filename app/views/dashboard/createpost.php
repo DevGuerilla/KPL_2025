@@ -108,7 +108,7 @@ ob_start();
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-3 mt-4">
                 <button type="submit" name="submit"
-                    class="group relative px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 hover:shadow-sm overflow-hidden">
+                    class="group relative px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 hover:shadow-sm overflow-hidden cursor-pointer">
                     <span class="relative z-10 transition-transform duration-300 group-hover:translate-x-1">
                         Terbitkan
                     </span>
