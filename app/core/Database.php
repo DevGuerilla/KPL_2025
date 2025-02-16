@@ -74,4 +74,24 @@ class Database
         // ini milik PDO
         return $this->smt->rowCount();
     }
+
+    public function lastInsertId()
+    {
+        return $this->dbh->lastInsertId();
+    }
+
+    public function beginTransaction()
+    {
+        return $this->dbh->beginTransaction();
+    }
+
+    public function commit()
+    {
+        return $this->dbh->commit();
+    }
+
+    public function rollBack()
+    {
+        return $this->dbh->rollBack();
+    }
 }

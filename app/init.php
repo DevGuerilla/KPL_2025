@@ -12,3 +12,7 @@ require_once 'core/Database.php';
 require_once 'config/config.php';
 // Flasher
 require_once 'core/Flasher.php';
+// UploadFile
+require_once 'core/UploadFile.php';
+// Helper
+require_once 'core/Helper.php';
