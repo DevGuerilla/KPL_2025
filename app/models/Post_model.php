@@ -83,18 +83,35 @@ class Post_model
 
   public function updatePost($data)
   {
-    $query = 'UPDATE post
+
+    $this->db->beginTransaction();
+    $modelTag = new Tags_model;
+
+    try{
+      $query = 'UPDATE post
               SET title = :title, content = :content, image = :image, updated_at = :updated_at
               WHERE id_post = :id_post';
-    $this->db->query($query);
-    $this->db->bind('title', $data['title']);
-    $this->db->bind('content', $data['content']);
-    $this->db->bind('image', $data['image']);
-    $this->db->bind('updated_at', date("Y-m-d H:i:s"));
-    $this->db->bind('id_post', $data['id_post']);
+      $this->db->query($query);
+      $this->db->bind('title', $data['title']);
+      $this->db->bind('content', $data['content']);
+      $this->db->bind('image', $data['image']);
+      $this->db->bind('updated_at', date("Y-m-d H:i:s"));
+      $this->db->bind('id_post', $data['id_post']);
 
-    $this->db->execute();
-    return $this->db->rowCount();
+      $this->db->execute();
+
+      $modelTag->deleteTags($data['id_post']);
+      $data['tags'] = json_decode($data['tags'], true);
+      foreach ($data['tags'] as $tag) {
+        $modelTag->createTags($data['id_post'], $tag['value']);
+      }
+
+      $this->db->commit();
+      return $this->db->rowCount();
+    } catch (PDOException $e) {
+      $this->db->rollBack();
+      return 0;
+    }
   }
 
   public function deletePost($id)
