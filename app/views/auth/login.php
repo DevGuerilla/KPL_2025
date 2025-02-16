@@ -5,7 +5,7 @@
 </style>
 
 <div class="min-h-screen flex items-center justify-center p-4"
-    x-data="{ show: true}"
+    x-data="{ show: false }"
     x-init="setTimeout(() => show = true, 150)">
     <div x-cloak
         x-show="show"
@@ -18,7 +18,7 @@
                 <div class="max-w-md mx-auto">
                     <div class="text-center md:text-left">
                         <a href="<?= BASEURL; ?>">
-                            <img src="<?= BASEURL; ?>/img/logo_item.png" alt="Uptime Logo" class="mb-3 w-auto mx-auto md:mx-0 transform hover:scale-105 transition-transform duration-500">
+                            <img src="<?= BASEURL; ?>/img/logo_only1.png" alt="Uptime Logo" class="mb-3 w-auto mx-auto md:mx-0 transform hover:scale-105 transition-transform duration-500">
                         </a>
                         <h3 class="text-2xl font-bold text-gray-900">Masuk ke Blog Campus</h3>
                         <p class="my-2 text-base text-gray-600">Bagikan cerita dan pengalamanmu di kampus</p>
