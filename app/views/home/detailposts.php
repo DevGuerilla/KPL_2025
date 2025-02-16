@@ -17,7 +17,7 @@ include_once __DIR__ . '/../../core/Helper.php';
 
     <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="relative h-[400px] w-full overflow-hidden">
-            <img src="/api/placeholder/1200/800" alt="Post cover" 
+            <img src="<?= BASEURL . "/img/posts/" . $data['post']['post']['image']; ?>" alt="Post cover" 
                  class="w-full h-full object-cover">
         </div>
 
@@ -44,12 +44,40 @@ include_once __DIR__ . '/../../core/Helper.php';
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 text-gray-500 text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <?= htmlspecialchars($data['post']['post']['created_at']); ?>
+                <div class="text-gray-600 text-sm py-2">
+                    <?php 
+                        $created_at = strtotime($data['post']['post']['created_at']);
+                        $updated_at = strtotime($data['post']['post']['updated_at']);
+                        $is_updated = $created_at != $updated_at;
+                    ?>
+
+                    <div class="flex items-center space-x-2">
+                        <?php if ($is_updated): ?>
+                            <!-- Tampilkan Updated -->
+                            <div class="relative group">
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-xs bg-gray-200 px-2 py-1 rounded-md text-gray-700">Updated</span>
+                                    <p class="text-gray-700 font-medium">
+                                        <?= htmlspecialchars(date('d M Y, H:i', $updated_at)); ?>
+                                    </p>
+                                </div>
+
+
+                                <!-- Tampilkan Created saat hover -->
+                                <div class="absolute left-0 mt-1 hidden group-hover:block bg-white shadow-md border text-gray-700 text-xs px-3 py-2 rounded-md">
+                                    Created: <?= htmlspecialchars(date('d M Y, H:i', $created_at)); ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <!-- Jika tidak ada pembaruan, tampilkan Created -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-gray-700 font-medium">
+                                <?= htmlspecialchars(date('d M Y, H:i', $created_at)); ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 

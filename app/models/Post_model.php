@@ -39,7 +39,7 @@ class Post_model
 
   public function getPostById(Int $id)
   {
-    $query = 'SELECT p.id_post,p.title, p.content, p.image, p.created_at, u.username, u.name, u.profile_picture_url
+    $query = 'SELECT p.id_post,p.title, p.content, p.image, p.created_at, p.updated_at, u.username, u.name, u.profile_picture_url
               FROM ' . $this->table . ' p
               JOIN user u
               ON p.id_user =  u.id_user

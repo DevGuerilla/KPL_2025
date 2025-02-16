@@ -53,7 +53,7 @@
                             </div>
                             <div class="transform group-hover:translate-x-2 transition-transform duration-300">
                                 <p class="text-sm font-semibold text-gray-900"><?= $post['post']['name']; ?></p>
-                                <p class="text-xs text-gray-500">Mar 15, 2024</p>
+                                <p class="text-xs text-gray-500"><?= date('d M Y', strtotime($post['post']['created_at'])); ?></p>
                             </div>
                         </div>
 
