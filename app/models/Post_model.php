@@ -51,34 +51,67 @@ class Post_model
 
   public function createPost($data)
   {
-    $query = 'INSERT INTO post (title, content, image, id_user, created_at, updated_at)
-              VALUES (:title, :content, :image, :id_user, :created_at, :updated_at)';
-    $this->db->query($query);
-    $this->db->bind('title', $data['title']);
-    $this->db->bind('content', $data['content']);
-    $this->db->bind('image', $data['image']);
-    $this->db->bind('id_user', $data['id_user']);
-    $this->db->bind('created_at', date("Y-m-d H:i:s"));
-    $this->db->bind('updated_at', date("Y-m-d H:i:s"));
+    $this->db->beginTransaction();
 
-    $this->db->execute();
-    return $this->db->rowCount();
+    $modelTag = new Tags_model;
+    try {
+      $query = 'INSERT INTO post (title, content, image, id_user, created_at, updated_at)
+              VALUES (:title, :content, :image, :id_user, :created_at, :updated_at)';
+      $this->db->query($query);
+      $this->db->bind('title', $data['title']);
+      $this->db->bind('content', $data['content']);
+      $this->db->bind('image', $data['image']);
+      $this->db->bind('id_user', $data['id_user']);
+      $this->db->bind('created_at', date("Y-m-d H:i:s"));
+      $this->db->bind('updated_at', date("Y-m-d H:i:s"));
+      
+      $this->db->execute();
+
+      $postId = $this->db->lastInsertId();
+      $data['tags'] = json_decode($data['tags'], true);
+      foreach ($data['tags'] as $tag) {
+        $modelTag->createTags($postId, $tag['value']);
+      }
+
+      $this->db->commit();
+      return $this->db->rowCount();
+    } catch (PDOException $e) {
+      $this->db->rollBack();
+      return 0;
+    }
   }
 
   public function updatePost($data)
   {
-    $query = 'UPDATE post
+
+    $this->db->beginTransaction();
+    $modelTag = new Tags_model;
+
+    try{
+      $query = 'UPDATE post
               SET title = :title, content = :content, image = :image, updated_at = :updated_at
               WHERE id_post = :id_post';
-    $this->db->query($query);
-    $this->db->bind('title', $data['title']);
-    $this->db->bind('content', $data['content']);
-    $this->db->bind('image', $data['image']);
-    $this->db->bind('updated_at', date("Y-m-d H:i:s"));
-    $this->db->bind('id_post', $data['id_post']);
+      $this->db->query($query);
+      $this->db->bind('title', $data['title']);
+      $this->db->bind('content', $data['content']);
+      $this->db->bind('image', $data['image']);
+      $this->db->bind('updated_at', date("Y-m-d H:i:s"));
+      $this->db->bind('id_post', $data['id_post']);
 
-    $this->db->execute();
-    return $this->db->rowCount();
+      $this->db->execute();
+
+      $modelTag->deleteTags($data['id_post']);
+      $data['tags'] = json_decode($data['tags'], true);
+      foreach ($data['tags'] as $tag) {
+        $modelTag->createTags($data['id_post'], $tag['value']);
+      }
+
+      $this->db->commit();
+      return $this->db->rowCount();
+    } catch (PDOException $e) {
+      $this->db->rollBack();
+      return 0;
+    }
   }
 
   public function deletePost($id)

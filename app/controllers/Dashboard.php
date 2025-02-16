@@ -130,12 +130,6 @@ class Dashboard extends Controller
             $_POST['image'] = UploadFile::upload($_FILES, 'image', 'posts');
         }
 
-        $_POST['tags'] = json_decode($_POST['tags'], true);
-        $this->tagModel->deleteTags($_POST['id_post']);
-        foreach ($_POST['tags'] as $tag) {
-            $this->tagModel->createTags($_POST['id_post'], $tag['value']);
-        }
-
         if ($this->postModel->updatePost($_POST) > 0) {
             Flasher::setFlash(true, ['message' => 'Post berhasil diubah!']);
         } else {

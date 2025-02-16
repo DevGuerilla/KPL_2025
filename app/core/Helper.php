@@ -9,7 +9,6 @@ class Helper
     die;
   }
 
-  // make str to excerpt 2 setences and last word is ... dot dont forget to take all the html tag
 
   public static function excerpt(String $string, int $length = 150)
   {
@@ -22,7 +21,6 @@ class Helper
     return $string;
   }
 
-  // make strtime from datetime to time what i want, eg: 1j yang lalu, 1m yang lalu, when uunderr 1 minute "baru saja" in Indonesia, asia/jakarta
   public static function timeAgo(String $datetime)
   {
     $time = strtotime($datetime);
