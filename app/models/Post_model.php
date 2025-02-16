@@ -153,4 +153,20 @@ class Post_model
     }
     return $data;
   }
+
+
+  // get recent top 3 post by id user
+  public function getRecentPostByUserId(Int $id)
+  {
+    $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
+              FROM ' . $this->table . ' p
+              JOIN user u
+              ON p.id_user =  u.id_user
+              WHERE p.id_user = :id
+              ORDER BY p.created_at DESC
+              LIMIT 3';
+    $this->db->query($query);
+    $this->db->bind('id', $id);
+    return $this->db->resultSet();
+  }
 }

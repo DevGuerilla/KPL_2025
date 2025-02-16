@@ -19,10 +19,52 @@ class Dashboard extends Controller
 
     public function index()
     {
+        $data['posts'] = $this->postModel->getRecentPostByUserId($_SESSION['myProfile']['id_user']);
         $this->view('templates/header');
-        $this->view('dashboard/index');
+        $this->view('dashboard/index', $data);
         $this->view('templates/footer');
     }
+    public function profile()
+    {
+        $data['posts'] = $this->postModel->getRecentPostByUserId($_SESSION['myProfile']['id_user']);
+        $this->view('templates/header');
+        $this->view('dashboard/editprofile', $data);
+        $this->view('templates/footer');
+    }
+
+
+    // post profile update jika tidak ada image ataupun tidak ada password itu boleh di update, jjika ada update sesuai yang ada , jika image gaada pake yang dari datatbase, misal password gaakada, ambil yang dari database, image gaada ambiil yyang dari database usermodel
+    public function doProfile()
+    {
+        $data = $_POST;
+        $user = $this->userModel->getUserById($_SESSION['myProfile']['id_user']);
+        $data['id_user'] = $user['id_user'];
+
+
+        if ($_FILES['image']['error'] === 4) {
+            $data['image'] = $user['profile_picture_url'];
+        } else {
+            $data['image'] = UploadFile::upload($_FILES, 'image', 'users');
+        }
+
+        if (empty($data['password'])) {
+            $data['password'] = $user['password'];
+        } else {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        if ($this->userModel->updateProfile($data) > 0) {
+            $user = $this->userModel->getUserById($user['id_user']);
+            // Helper::dd($user);
+            $_SESSION['myProfile'] = $user;
+            Flasher::setFlash(true, ['message' => 'Profile berhasil diubah!']);
+        } else {
+            Flasher::setFlash(false, ['message' => 'Profile gagal diubah!']);
+        }
+
+        header('Location: ' . BASEURL . '/dashboard/profile');
+    }
+
 
     public function posts()
     {

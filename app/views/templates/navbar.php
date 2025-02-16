@@ -44,7 +44,7 @@
                             </a>
                         </div>
                     <?php else: ?>
-                    <div class="relative" x-data="{ 
+                        <div class="relative" x-data="{ 
                         open: false,
                         showLogoutConfirm: false,
                         async toggleDropdown() {
@@ -61,79 +61,95 @@
                             }
                         }
                     }">
-                        <button @click="toggleDropdown()"
-                            class="relative flex items-center gap-3 p-2.5 hover:bg-gray-100 rounded-xl transition-all duration-300 group">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full overflow-hidden ring-2 ring-white shadow-lg transition-all duration-300 group-hover:shadow-blue-200">
-                                    <div class="w-full h-full flex items-center justify-center text-white font-medium">
-                                        <?= substr(htmlspecialchars($_SESSION['myProfile']['username']), 0, 1); ?>
-                                    </div>
-                                </div>
-                                <div class="hidden md:block text-left">
-                                    <p class="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors duration-300">
-                                        <?= htmlspecialchars($_SESSION['myProfile']['username']); ?>
-                                    </p>
-                                    <p class="text-xs text-gray-500">
-                                        <?= htmlspecialchars($_SESSION['myProfile']['email']); ?>
-                                    </p>
-                                </div>
-                                <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 group-hover:text-blue-600"
-                                    :class="{'rotate-180': open}"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
-                                        d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </div>
-                        </button>
+                            <button @click="toggleDropdown()"
+                                class="relative flex items-center gap-3 p-2.5 hover:bg-gray-100 rounded-xl transition-all duration-300 group">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full overflow-hidden ring-2 ring-white shadow-lg transition-all duration-300 group-hover:shadow-blue-200">
+                                        <img src="<?= BASEURL ?>/img/users/<?= $_SESSION['myProfile']['profile_picture_url'] ?? 'default.jpg' ?>" class="w-full h-full flex items-center justify-center text-white font-medium">
 
-                        <div x-show="open" 
-                            x-ref="dropdown"
-                            @click.away="toggleDropdown()"
-                            class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl py-2 ring-1 ring-black/5 transform origin-top"
-                            style="display: none;">
-                            
-                            <div class="p-2 space-y-1">
-                                <a href="<?= BASEURL; ?>/profile" 
-                                    class="flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-300 group">
-                                    <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors duration-300">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
+                                        </img>
                                     </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">Dashbaord</p>
-                                        <p class="text-xs text-gray-500">Kelola informasi personal</p>
+                                    <div class="hidden md:block text-left">
+                                        <p class="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors duration-300">
+                                            <?= htmlspecialchars($_SESSION['myProfile']['username']); ?>
+                                        </p>
+                                        <p class="text-xs text-gray-500">
+                                            <?= htmlspecialchars($_SESSION['myProfile']['email']); ?>
+                                        </p>
                                     </div>
-                                </a>
+                                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-300 group-hover:text-blue-600"
+                                        :class="{'rotate-180': open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </button>
+
+                            <div x-show="open"
+                                x-ref="dropdown"
+                                @click.away="toggleDropdown()"
+                                class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl py-2 ring-1 ring-black/5 transform origin-top"
+                                style="display: none;">
+
+                                <div class="p-2 space-y-1">
+                                    <a href="<?= BASEURL; ?>/dashboard/profile"
+                                        class="flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-300 group">
+                                        <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors duration-300">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">Profile</p>
+                                            <p class="text-xs text-gray-500">Kelola informasi personal</p>
+                                        </div>
+                                    </a>
 
                                     <div class="h-px bg-gray-100 my-2"></div>
 
-                                <form action="<?= BASEURL; ?>/auth/logout" method="post">
-                                    <button type="submit" 
-                                        class="w-full flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-red-50 transition-all duration-300 group">
-                                        <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-red-50 text-red-600 group-hover:bg-red-100 transition-colors duration-300">
+                                    <a href="<?= BASEURL; ?>/dashboard"
+                                        class="flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-300 group">
+                                        <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors duration-300">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                             </svg>
                                         </div>
-                                        <div class="flex-1 text-left">
-                                            <p class="text-sm font-medium group-hover:text-red-600 transition-colors duration-300">Keluar</p>
-                                            <p class="text-xs text-gray-500">Akhiri sesi anda</p>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">Dashboard</p>
+                                            <p class="text-xs text-gray-500">Kelola halaman utama</p>
                                         </div>
-                                    </button>
-                                </form>
+                                    </a>
+
+                                    <div class="h-px bg-gray-100 my-2"></div>
+
+                                    <form action="<?= BASEURL; ?>/auth/logout" method="post">
+                                        <button type="submit"
+                                            class="w-full flex items-center gap-3 p-2.5 rounded-xl text-gray-700 hover:bg-red-50 transition-all duration-300 group">
+                                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-red-50 text-red-600 group-hover:bg-red-100 transition-colors duration-300">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 text-left">
+                                                <p class="text-sm font-medium group-hover:text-red-600 transition-colors duration-300">Keluar</p>
+                                                <p class="text-xs text-gray-500">Akhiri sesi anda</p>
+                                            </div>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div x-show="searchOpen" 
+    <div x-show="searchOpen"
         x-cloak
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -180,7 +196,7 @@
                         </div>
                     </div>
 
-                    <div x-show="!isLoading && searchQuery.length >= 2" 
+                    <div x-show="!isLoading && searchQuery.length >= 2"
                         class="py-8 text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
