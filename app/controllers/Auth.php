@@ -37,6 +37,7 @@ class Auth extends Controller
                     if (password_verify($password, $data['password'])) {
                         $_SESSION['isLoggedIn'] = true;
                         $_SESSION['myProfile'] = $data;
+                        $_SESSION['csrf_token'] = Helper::generateCSRFToken();
                         Flasher::setFlash(true, ['message' => 'Selamat datang, ' . $data['username'] . '']);
                         header('Location: ' . BASEURL . '/');
                         exit;
