@@ -153,6 +153,7 @@ include_once __DIR__ . '/../../core/Helper.php';
                                 <form method="POST" action="<?= BASEURL; ?>/posts/detail/<?= $data['post']['post']['id_post']; ?>" class="mt-2">
                                     <?php if (isset($_SESSION['isLoggedIn'])): ?>
                                         <input type="hidden" name="username" value="<?= htmlspecialchars($_SESSION['myProfile']['username']); ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? ''; ?>">
                                     <?php else: ?>
                                         <input type="hidden" name="username" value="Tamu">
                                     <?php endif; ?>

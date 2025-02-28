@@ -1,4 +1,4 @@
-<?php include_once __DIR__ . '/../templates/navbar.php'; ?>
+<?php include_once __DIR__ . '/../templates/navbar.php';?>
 
 <!-- Modern Hero Section with Blue-500 Base -->
 <div class="relative bg-blue-500 overflow-hidden pt-24">
