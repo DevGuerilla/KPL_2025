@@ -47,7 +47,7 @@ class FileSanitizer
             return ['success' => false, 'message' => 'File type not allowed.'];
         }
 
-        // Additional security checks
+        // Basic image validation - simplified
         if (!self::isValidImage($file['tmp_name'])) {
             return ['success' => false, 'message' => 'Invalid image file.'];
         }
@@ -83,7 +83,7 @@ class FileSanitizer
 
     private static function isValidImage(string $filePath): bool
     {
-        // Try to create image resource to validate
+        // Simplified validation - just check if it's a valid image
         $imageInfo = getimagesize($filePath);
         if ($imageInfo === false) {
             Logger::security('Invalid image file detected', ['file_path' => basename($filePath)]);
@@ -97,30 +97,6 @@ class FileSanitizer
             return false;
         }
 
-        // Additional check: try to load the image
-        switch ($imageInfo[2]) {
-            case IMAGETYPE_JPEG:
-                $image = @imagecreatefromjpeg($filePath);
-                break;
-            case IMAGETYPE_PNG:
-                $image = @imagecreatefrompng($filePath);
-                break;
-            case IMAGETYPE_GIF:
-                $image = @imagecreatefromgif($filePath);
-                break;
-            case IMAGETYPE_WEBP:
-                $image = @imagecreatefromwebp($filePath);
-                break;
-            default:
-                return false;
-        }
-
-        if ($image === false) {
-            Logger::security('Corrupted image file detected');
-            return false;
-        }
-
-        imagedestroy($image);
         return true;
     }
 
@@ -168,35 +144,5 @@ class FileSanitizer
         }
 
         return true;
-    }
-
-    public static function cleanupOldFiles(string $folder = 'posts', int $daysOld = 30): int
-    {
-        $uploadPath = self::UPLOAD_PATH . $folder . '/';
-        $cutoffTime = time() - ($daysOld * 24 * 60 * 60);
-        $deletedCount = 0;
-
-        if (!is_dir($uploadPath)) {
-            return 0;
-        }
-
-        $files = glob($uploadPath . '*');
-        foreach ($files as $file) {
-            if (is_file($file) && filemtime($file) < $cutoffTime) {
-                if (unlink($file)) {
-                    $deletedCount++;
-                }
-            }
-        }
-
-        if ($deletedCount > 0) {
-            Logger::activity('Cleaned up old files', [
-                'folder' => $folder,
-                'deleted_count' => $deletedCount,
-                'days_old' => $daysOld
-            ]);
-        }
-
-        return $deletedCount;
     }
 }

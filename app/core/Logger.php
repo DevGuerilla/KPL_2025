@@ -4,8 +4,6 @@ class Logger
 {
     private static ?string $logDirectory = null;
     private static array $logLevels = ['DEBUG', 'INFO', 'ACTIVITY', 'WARNING', 'ERROR', 'SECURITY'];
-    private static int $maxLogSize = 10485760; // 10MB
-    private static int $maxBackups = 5;
 
     private static function getLogDirectory(): string
     {
@@ -23,10 +21,6 @@ class Logger
             error_log("Failed to create log directory: {$logDir}");
             throw new Exception("Cannot create log directory: {$logDir}");
         }
-        if (!is_writable($logDir)) {
-            error_log("Log directory is not writable: {$logDir}");
-            throw new Exception("Log directory is not writable: {$logDir}");
-        }
     }
 
     public static function log(string $level, string $message, array $context = []): void
@@ -39,26 +33,17 @@ class Logger
             }
 
             $logEntry = [
-                'timestamp' => date('Y-m-d\TH:i:s.vP'),
+                'timestamp' => date('Y-m-d H:i:s'),
                 'level' => $level,
                 'message' => self::sanitizeInput($message),
-                'user_id' => $_SESSION['myProfile']['id_user'] ?? 'guest_id',
-                'username' => self::sanitizeInput($_SESSION['myProfile']['username'] ?? 'guest_user'),
+                'user_id' => $_SESSION['myProfile']['id_user'] ?? 'guest',
+                'username' => self::sanitizeInput($_SESSION['myProfile']['username'] ?? 'guest'),
                 'ip_address' => self::getClientIP(),
-                'request_uri' => self::sanitizeInput($_SERVER['REQUEST_URI'] ?? 'N/A'),
-                'user_agent' => self::sanitizeInput($_SERVER['HTTP_USER_AGENT'] ?? 'N/A'),
-                'session_id' => substr(session_id(), 0, 8),
-                'context' => self::sanitizeContext($context)
+                'context' => $context
             ];
 
             $logLine = json_encode($logEntry, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL;
-
             $filename = self::getLogDirectory() . date('Y-m-d') . '.log';
-
-            // Check file size and rotate if necessary
-            if (file_exists($filename) && filesize($filename) > self::$maxLogSize) {
-                self::rotateLogFile($filename);
-            }
 
             if (!file_put_contents($filename, $logLine, FILE_APPEND | LOCK_EX)) {
                 error_log("Failed to write to log file: {$filename}");
@@ -95,51 +80,11 @@ class Logger
         return $logs;
     }
 
-    private static function rotateLogFile(string $filename): void
-    {
-        $rotatedName = $filename . '.' . date('His');
-        if (rename($filename, $rotatedName)) {
-            // Clean old backups
-            self::cleanOldBackups($filename);
-        }
-    }
-
-    private static function cleanOldBackups(string $baseFilename): void
-    {
-        $pattern = $baseFilename . '.*';
-        $files = glob($pattern);
-        if (count($files) > self::$maxBackups) {
-            array_multisort(array_map('filemtime', $files), SORT_ASC, $files);
-            $filesToDelete = array_slice($files, 0, count($files) - self::$maxBackups);
-            foreach ($filesToDelete as $file) {
-                unlink($file);
-            }
-        }
-    }
-
     private static function sanitizeInput(string $input): string
     {
         $sanitized = str_replace(["\r", "\n", "\t"], ' ', $input);
         $sanitized = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $sanitized);
-        return mb_substr($sanitized, 0, 1000, 'UTF-8');
-    }
-
-    private static function sanitizeContext(array $context): array
-    {
-        $sanitized = [];
-        foreach ($context as $key => $value) {
-            $sKey = self::sanitizeInput((string)$key);
-            if (is_string($value)) {
-                $sanitized[$sKey] = self::sanitizeInput($value);
-            } elseif (is_array($value)) {
-                $sanitized[$sKey] = self::sanitizeContext($value);
-            } elseif (is_scalar($value)) {
-                $sanitized[$sKey] = $value;
-            } else {
-                $sanitized[$sKey] = '[COMPLEX_TYPE]';
-            }
-        }
-        return $sanitized;
+        return mb_substr($sanitized, 0, 500, 'UTF-8');
     }
 
     private static function getClientIP(): string

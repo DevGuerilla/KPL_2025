@@ -2,9 +2,9 @@
 
 class SecurityValidator
 {
-    private const MAX_REQUEST_SIZE = 1048576; // 1MB
-    private const MAX_INPUT_LENGTH = 1000;
-    private const RATE_LIMIT_REQUESTS = 10;
+    private const MAX_REQUEST_SIZE = 5242880; // 5MB
+    private const MAX_INPUT_LENGTH = 5000;
+    private const RATE_LIMIT_REQUESTS = 50;
     private const RATE_LIMIT_WINDOW = 300; // 5 minutes
 
     private array $suspiciousPatterns = [
@@ -25,7 +25,6 @@ class SecurityValidator
         $this->checkRateLimit();
         $this->validateRequestSize($serverData);
         $this->validateInputData($postData);
-        $this->checkSuspiciousActivity($postData, $serverData);
     }
 
     private function checkRateLimit(): void
@@ -100,55 +99,6 @@ class SecurityValidator
                 throw new SecurityException('Suspicious input detected.');
             }
         }
-    }
-
-    private function checkSuspiciousActivity(array $postData, array $serverData): void
-    {
-        // Check for empty user agent
-        if (empty($serverData['HTTP_USER_AGENT'])) {
-            Logger::security('Empty user agent detected');
-        }
-
-        // Check for suspicious referrer
-        $referrer = $serverData['HTTP_REFERER'] ?? '';
-        if (!empty($referrer) && !$this->isValidReferrer($referrer)) {
-            Logger::security('Suspicious referrer', ['referrer' => $referrer]);
-        }
-
-        // Check for bot-like behavior
-        $userAgent = $serverData['HTTP_USER_AGENT'] ?? '';
-        if ($this->isSuspiciousUserAgent($userAgent)) {
-            Logger::security('Suspicious user agent', ['user_agent' => $userAgent]);
-        }
-    }
-
-    private function isValidReferrer(string $referrer): bool
-    {
-        $allowedDomains = [
-            parse_url(BASEURL, PHP_URL_HOST),
-            'localhost',
-            '127.0.0.1'
-        ];
-
-        $referrerHost = parse_url($referrer, PHP_URL_HOST);
-        return in_array($referrerHost, $allowedDomains, true);
-    }
-
-    private function isSuspiciousUserAgent(string $userAgent): bool
-    {
-        $suspiciousAgents = [
-            'bot', 'crawler', 'spider', 'scraper', 'curl', 'wget',
-            'python', 'perl', 'java/', 'scanner'
-        ];
-
-        $lowerAgent = strtolower($userAgent);
-        foreach ($suspiciousAgents as $agent) {
-            if (strpos($lowerAgent, $agent) !== false) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function getClientIP(): string

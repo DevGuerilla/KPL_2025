@@ -41,7 +41,6 @@ class Database
             $this->stmt = $this->dbh->prepare($query);
 
             $executionTime = microtime(true) - $startTime;
-            DatabaseSecurity::logQueryPerformance($query, $executionTime);
 
             // Log query for debugging
             $this->queryLog[] = [
@@ -49,6 +48,14 @@ class Database
                 'time' => $executionTime,
                 'timestamp' => time()
             ];
+
+            // Log slow queries manually
+            if ($executionTime > 1.0) {
+                Logger::warning('Slow query detected', [
+                    'query' => substr($query, 0, 200),
+                    'execution_time' => $executionTime
+                ]);
+            }
 
         } catch (PDOException $e) {
             Logger::error('Database query preparation failed', [

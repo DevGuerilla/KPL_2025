@@ -3,9 +3,9 @@
 class Captcha
 {
     private static string $sessionKey = 'captcha_data';
-    private static int $maxAttempts = 5;
-    private static int $cooldownTime = 900; // 15 minutes
-    private static int $captchaExpiration = 300; // 5 minutes
+    private static int $maxAttempts = 10;
+    private static int $cooldownTime = 300; // 5 minutes
+    private static int $captchaExpiration = 600; // 10 minutes
 
     public static function generateCaptcha(): string
     {
@@ -32,18 +32,17 @@ class Captcha
 
             $question = "$num1 $op $num2";
 
-            // Store in session with security measures
+            // Store in session - simplified
             $_SESSION[self::$sessionKey] = [
-                'answer' => password_hash((string)$answer, PASSWORD_DEFAULT),
-                'raw_answer' => $answer, // For validation only
-                'question_hash' => hash('sha256', $question . session_id()),
+                'answer' => $answer,
+                'question' => $question,
                 'created_at' => time(),
                 'attempts' => $_SESSION[self::$sessionKey]['attempts'] ?? 0,
                 'ip' => self::getClientIP()
             ];
 
             Logger::activity('Math CAPTCHA generated', [
-                'question' => self::sanitizeInput($question),
+                'question' => $question,
                 'ip' => self::getClientIP()
             ]);
 
@@ -74,17 +73,8 @@ class Captcha
                 return false;
             }
 
-            // Check IP consistency
-            if ($captchaData['ip'] !== self::getClientIP()) {
-                Logger::warning('CAPTCHA validation: IP mismatch', [
-                    'original_ip' => $captchaData['ip'],
-                    'current_ip' => self::getClientIP()
-                ]);
-                return false;
-            }
-
-            // Validate answer
-            $isValid = (int)$sanitizedInput === (int)$captchaData['raw_answer'];
+            // Validate answer - simplified
+            $isValid = (int)$sanitizedInput === (int)$captchaData['answer'];
 
             if (!$isValid) {
                 $_SESSION[self::$sessionKey]['attempts']++;
@@ -131,43 +121,6 @@ class Captcha
         return isset($_SESSION[self::$sessionKey]['blocked_until'])
             ? max(0, $_SESSION[self::$sessionKey]['blocked_until'] - time())
             : 0;
-    }
-
-    public static function generateImageCaptcha(): void
-    {
-        $width = 150;
-        $height = 50;
-        $image = imagecreatetruecolor($width, $height);
-
-        // Colors
-        $bgColor = imagecolorallocate($image, 255, 255, 255);
-        $textColor = imagecolorallocate($image, 0, 0, 0);
-        $lineColor = imagecolorallocate($image, 128, 128, 128);
-
-        imagefill($image, 0, 0, $bgColor);
-
-        // Generate simple math problem
-        $num1 = rand(1, 20);
-        $num2 = rand(1, 15);
-        $operation = '+';
-        $answer = $num1 + $num2;
-        $text = "$num1 $operation $num2 = ?";
-
-        // Store answer in session
-        $_SESSION['captcha_answer'] = $answer;
-
-        // Add noise lines
-        for ($i = 0; $i < 5; $i++) {
-            imageline($image, rand(0, $width), rand(0, $height),
-                rand(0, $width), rand(0, $height), $lineColor);
-        }
-
-        // Add text
-        imagestring($image, 5, 30, 15, $text, $textColor);
-
-        header('Content-Type: image/png');
-        imagepng($image);
-        imagedestroy($image);
     }
 
     private static function ensureNotBlocked(): void

@@ -2,52 +2,16 @@
 
 class DatabaseSecurity
 {
-    private static array $suspiciousQueries = [
-        'UNION', 'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE', 'ALTER',
-        'EXEC', 'EXECUTE', 'SCRIPT', 'DECLARE', 'CAST', 'CONVERT', 'LOAD_FILE',
-        'INTO OUTFILE', 'INTO DUMPFILE', 'BENCHMARK', 'SLEEP', 'WAITFOR'
-    ];
-
     public static function validateQuery(string $query, array $params = []): void
     {
-        // Log all database queries for audit
+        // logging for audit
         Logger::debug('Database query executed', [
             'query' => substr($query, 0, 100),
             'param_count' => count($params)
         ]);
 
-        // Check for suspicious patterns in prepared statements
-        self::detectSuspiciousPatterns($query);
-
-        // Validate parameters
+        // Basic parameter validation
         self::validateQueryParameters($params);
-    }
-
-    private static function detectSuspiciousPatterns(string $query): void
-    {
-        $upperQuery = strtoupper($query);
-
-        // Check for SQL injection patterns
-        foreach (self::$suspiciousQueries as $pattern) {
-            if (strpos($upperQuery, $pattern) !== false) {
-                // This is expected for legitimate queries, but log for monitoring
-                Logger::debug('SQL keyword detected', ['keyword' => $pattern]);
-            }
-        }
-
-        // Check for comment-based injection attempts
-        if (preg_match('/--|\*\/|\*|#/', $query)) {
-            Logger::security('SQL comment detected in query', [
-                'query_snippet' => substr($query, 0, 100)
-            ]);
-        }
-
-        // Check for union-based injection
-        if (preg_match('/UNION\s+SELECT/i', $query)) {
-            Logger::security('UNION SELECT detected', [
-                'query_snippet' => substr($query, 0, 100)
-            ]);
-        }
     }
 
     private static function validateQueryParameters(array $params): void
@@ -62,7 +26,7 @@ class DatabaseSecurity
                     ]);
                 }
 
-                // Check for suspicious content in parameters
+                // Basic suspicious content check
                 if (self::containsSuspiciousContent($value)) {
                     Logger::security('Suspicious parameter content', [
                         'param_key' => $key,
@@ -77,15 +41,10 @@ class DatabaseSecurity
     {
         $suspiciousPatterns = [
             '/\b(UNION|SELECT|INSERT|UPDATE|DELETE|DROP)\b/i',
-            '/\b(EXEC|EXECUTE|SCRIPT|DECLARE)\b/i',
-            '/\b(LOAD_FILE|INTO\s+OUTFILE|INTO\s+DUMPFILE)\b/i',
-            '/\b(BENCHMARK|SLEEP|WAITFOR)\b/i',
             '/\'.*\sOR\s.*\'=/i',
             '/\'.*\sAND\s.*\'=/i',
-            '/--|\*\/|\*|#/',
             '/<script[^>]*>.*?<\/script>/i',
-            '/javascript:/i',
-            '/on\w+\s*=/i'
+            '/javascript:/i'
         ];
 
         foreach ($suspiciousPatterns as $pattern) {
@@ -95,23 +54,6 @@ class DatabaseSecurity
         }
 
         return false;
-    }
-
-    public static function logQueryPerformance(string $query, float $executionTime): void
-    {
-        // Log slow queries
-        if ($executionTime > 1.0) { // 1 second threshold
-            Logger::warning('Slow query detected', [
-                'query' => substr($query, 0, 200),
-                'execution_time' => $executionTime
-            ]);
-        }
-
-        // Log query performance for monitoring
-        Logger::debug('Query performance', [
-            'execution_time' => $executionTime,
-            'query_length' => strlen($query)
-        ]);
     }
 
     public static function sanitizeInput(string $input): string
@@ -170,11 +112,7 @@ class DatabaseSecurity
 
     public static function hashPassword(string $password): string
     {
-        return password_hash($password, PASSWORD_ARGON2ID, [
-            'memory_cost' => 65536, // 64 MB
-            'time_cost' => 4,       // 4 iterations
-            'threads' => 3,         // 3 threads
-        ]);
+        return password_hash($password, PASSWORD_DEFAULT);
     }
 
     public static function verifyPassword(string $password, string $hash): bool

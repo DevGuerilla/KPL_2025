@@ -4,7 +4,6 @@ class SessionManager
 {
     private const SESSION_TIMEOUT = 3600; // 1 hour
     private const REGENERATE_INTERVAL = 300; // 5 minutes
-    private const MAX_CONCURRENT_SESSIONS = 3;
 
     public static function init(): void
     {
@@ -45,21 +44,6 @@ class SessionManager
         // Regenerate session ID periodically
         if (time() - $_SESSION['regenerate_time'] > self::REGENERATE_INTERVAL) {
             self::regenerate();
-        }
-
-        // Validate IP consistency (optional - can be disabled for mobile users)
-        if (isset($_SESSION['ip_address'])) {
-            $currentIP = self::getClientIP();
-            if ($_SESSION['ip_address'] !== $currentIP) {
-                Logger::security('Session IP mismatch', [
-                    'original_ip' => $_SESSION['ip_address'],
-                    'current_ip' => $currentIP
-                ]);
-                // Uncomment below line if you want strict IP validation
-                // self::destroy();
-            }
-        } else {
-            $_SESSION['ip_address'] = self::getClientIP();
         }
     }
 
@@ -103,7 +87,6 @@ class SessionManager
         $_SESSION['myProfile'] = $user;
         $_SESSION['login_time'] = time();
         $_SESSION['csrf_token'] = Helper::generateCSRFToken();
-        $_SESSION['ip_address'] = self::getClientIP();
 
         Logger::info('User session established', [
             'user_id' => $user['id_user'],
@@ -147,20 +130,5 @@ class SessionManager
     public static function getUserId(): ?int
     {
         return $_SESSION['myProfile']['id_user'] ?? null;
-    }
-
-    private static function getClientIP(): string
-    {
-        $headers = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'];
-        foreach ($headers as $header) {
-            if (!empty($_SERVER[$header])) {
-                $ips = explode(',', $_SERVER[$header]);
-                $ip = trim($ips[0]);
-                if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                    return $ip;
-                }
-            }
-        }
-        return 'UNKNOWN';
     }
 }
