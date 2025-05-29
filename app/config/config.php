@@ -13,7 +13,7 @@ define("BASEURL", ($_ENV['APP_URL'] ?? '') . "/public");
 define('DB_HOST', $_ENV['DB_HOST'] ?? '127.0.0.1');
 define('DB_USER', $_ENV['DB_USERNAME'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASSWORD'] ?? '');
-define('DB_NAME', $_ENV['DB_NAME'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'kpl2025');
 
 // TIMEZONE DEFINE
 date_default_timezone_set($_ENV['TIMEZONE'] ?? 'Asia/Jakarta');
