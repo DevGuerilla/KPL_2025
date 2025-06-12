@@ -40,7 +40,7 @@ class InputValidator
 
         return [
             'valid' => true,
-            'username' => htmlspecialchars($sanitizedUsername, ENT_QUOTES, 'UTF-8'),
+            'username' => $sanitizedUsername,
             'password' => $password,
             'captcha_answer' => $captchaAnswer
         ];
@@ -127,8 +127,8 @@ class InputValidator
 
         return [
             'valid' => true,
-            'username' => htmlspecialchars($this->sanitizeInput($username), ENT_QUOTES, 'UTF-8'),
-            'name' => htmlspecialchars($this->sanitizeInput($name), ENT_QUOTES, 'UTF-8'),
+            'username' => $this->sanitizeInput($username),
+            'name' => $this->sanitizeInput($name),
             'email' => $sanitizedEmail,
             'password' => $password,
             'captcha_answer' => $captchaAnswer
@@ -145,13 +145,37 @@ class InputValidator
         return preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/', $password) === 1;
     }
 
-    private function sanitizeInput(string $input): string
+    private function sanitizeInput(string $input, bool $isRichText = false): string
     {
+        if ($isRichText) {
+            // For rich text content, only remove the most dangerous patterns
+            $input = preg_replace([
+                '/<script\b[^>]*>(.*?)<\/script>/is',
+                '/javascript:/i',
+                '/on\w+\s*=/i',
+                '/data:text\/html/i',
+                '/data:image\/svg\+xml/i'
+            ], '', $input);
+            return trim($input);
+        }
+
+        // For regular input, apply strict sanitization
         // Remove control characters
         $sanitized = preg_replace('/[\x00-\x1F\x7F]/u', '', $input);
 
-        // Remove potential XSS characters
-        $sanitized = str_replace(['<', '>', '"', "'", '&'], '', $sanitized);
+        // Remove HTML tags and special characters
+        $sanitized = strip_tags($sanitized);
+        $sanitized = htmlspecialchars($sanitized, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // Remove potential XSS patterns
+        $sanitized = preg_replace([
+            '/javascript:/i',
+            '/vbscript:/i',
+            '/on\w+\s*=/i',
+            '/expression\s*\(/i',
+            '/data:text\/html/i',
+            '/data:image\/svg\+xml/i'
+        ], '', $sanitized);
 
         return trim($sanitized);
     }

@@ -32,7 +32,39 @@
 
         <!-- Form Container (Using index.php card styling) -->
         <div class="space-y-6">
-            <form action="<?= BASEURL ?>/dashboard/doProfile" method="POST" enctype="multipart/form-data">
+            <form action="<?= BASEURL ?>/dashboard/doProfile" method="POST" enctype="multipart/form-data" x-data="{
+                submitForm(event) {
+                    const form = event.target;
+                    const name = form.name.value.trim();
+                    const csrfToken = form.csrf_token.value;
+
+                    // Client-side validation
+                    if (!name || !csrfToken) {
+                        alert('Nama wajib diisi!');
+                        event.preventDefault();
+                        return false;
+                    }
+
+                    // Basic XSS prevention on client side
+                    const xssPattern = /<script\b[^>]*>|javascript:|on\w+\s*=|data:text\/html|data:image\/svg\+xml/i;
+                    if (xssPattern.test(name)) {
+                        alert('Nama mengandung karakter yang tidak valid!');
+                        event.preventDefault();
+                        return false;
+                    }
+
+                    // Validate CSRF token format
+                    if (!/^[a-f0-9]{64}$/.test(csrfToken)) {
+                        alert('Token keamanan tidak valid!');
+                        event.preventDefault();
+                        return false;
+                    }
+
+                    return true;
+                }
+            }" @submit="submitForm($event)">
+                <!-- CSRF Token -->
+                <?= Helper::renderCSRFField(); ?>
                 <!-- Profile Picture Card -->
                 <div class="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100/50 hover:shadow-lg transition-all duration-300">
                     <div class="flex flex-col md:flex-row gap-8">

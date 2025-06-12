@@ -28,10 +28,42 @@ ob_start();
         removeImage() {
             this.imageUrl = '';
             document.getElementById('image-upload').value = '';
+        },
+        submitForm(event) {
+            const form = event.target;
+            const title = form.title.value.trim();
+            const content = form.content.value;
+            const csrfToken = form.csrf_token.value;
+
+            // Client-side validation
+            if (!title || !content || !csrfToken) {
+                alert('Judul dan konten wajib diisi!');
+                event.preventDefault();
+                return false;
+            }
+
+            // Basic XSS prevention on client side
+            const xssPattern = /<script\b[^>]*>|javascript:|on\w+\s*=|data:text\/html|data:image\/svg\+xml/i;
+            if (xssPattern.test(title)) {
+                alert('Judul mengandung karakter yang tidak valid!');
+                event.preventDefault();
+                return false;
+            }
+
+            // Validate CSRF token format
+            if (!/^[a-f0-9]{64}$/.test(csrfToken)) {
+                alert('Token keamanan tidak valid!');
+                event.preventDefault();
+                return false;
+            }
+
+            return true;
         }
     }">
         <!-- Main Form -->
-        <form id="postForm" action="<?= BASEURL; ?>/dashboard/updatepost/<?= $post['id'] ?? '' ?>" method="POST" enctype="multipart/form-data" class="space-y-4" x-show="!isPreview">
+        <form id="postForm" action="<?= BASEURL; ?>/dashboard/updatepost/<?= $post['id'] ?? '' ?>" method="POST" enctype="multipart/form-data" class="space-y-4" x-show="!isPreview" @submit="submitForm($event)">
+            <!-- CSRF Token -->
+            <?= Helper::renderCSRFField(); ?>
             <!-- First Row: Title and Tags (50-50 split) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <!-- Title Input (Left 50%) -->

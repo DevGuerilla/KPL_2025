@@ -59,7 +59,7 @@ class Helper
     // CSRF Protection Methods
     public static function generateCSRFToken(): string
     {
-        if (empty($_SESSION['csrf_token'])) {
+        if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             $_SESSION['csrf_token_time'] = time();
         }
@@ -68,6 +68,11 @@ class Helper
         if (isset($_SESSION['csrf_token_time']) && (time() - $_SESSION['csrf_token_time']) > 3600) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             $_SESSION['csrf_token_time'] = time();
+        }
+
+        // Add user-specific salt for logged-in users
+        if (isset($_SESSION['user_id'])) {
+            return hash_hmac('sha256', $_SESSION['csrf_token'], $_SESSION['user_id']);
         }
 
         return $_SESSION['csrf_token'];
@@ -83,13 +88,20 @@ class Helper
             return false;
         }
 
-        $isValid = hash_equals($_SESSION['csrf_token'], $token);
+        // For logged-in users, validate with user-specific salt
+        if (isset($_SESSION['user_id'])) {
+            $expectedToken = hash_hmac('sha256', $_SESSION['csrf_token'], $_SESSION['user_id']);
+            $isValid = hash_equals($expectedToken, $token);
+        } else {
+            $isValid = hash_equals($_SESSION['csrf_token'], $token);
+        }
 
         if (!$isValid) {
             Logger::security('CSRF token mismatch detected', [
                 'expected_token_length' => strlen($_SESSION['csrf_token']),
                 'provided_token_length' => strlen($token),
-                'ip_address' => self::getClientIP()
+                'ip_address' => self::getClientIP(),
+                'user_id' => $_SESSION['user_id'] ?? 'guest'
             ]);
         }
 

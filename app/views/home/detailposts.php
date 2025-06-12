@@ -150,7 +150,37 @@ include_once __DIR__ . '/../../core/Helper.php';
                                         <div class="w-2 h-2 bg-green-500 rounded-full"></div>
                                     <?php endif; ?>
                                 </div>
-                                <form method="POST" action="<?= BASEURL; ?>/posts/detail/<?= $data['post']['post']['id_post']; ?>" class="mt-2">
+                                <form method="POST" action="<?= BASEURL; ?>/posts/detail/<?= $data['post']['post']['id_post']; ?>" class="mt-2" x-data="{
+                                    submitForm(event) {
+                                        const form = event.target;
+                                        const comment = form.comment.value.trim();
+                                        const csrfToken = form.csrf_token.value;
+
+                                        // Client-side validation
+                                        if (!comment || !csrfToken) {
+                                            alert('Komentar wajib diisi!');
+                                            event.preventDefault();
+                                            return false;
+                                        }
+
+                                        // Basic XSS prevention on client side
+                                        const xssPattern = /<script\b[^>]*>|javascript:|on\w+\s*=|data:text\/html|data:image\/svg\+xml/i;
+                                        if (xssPattern.test(comment)) {
+                                            alert('Komentar mengandung karakter yang tidak valid!');
+                                            event.preventDefault();
+                                            return false;
+                                        }
+
+                                        // Validate CSRF token format for logged-in users
+                                        if (csrfToken && !/^[a-f0-9]{64}$/.test(csrfToken)) {
+                                            alert('Token keamanan tidak valid!');
+                                            event.preventDefault();
+                                            return false;
+                                        }
+
+                                        return true;
+                                    }
+                                }" @submit="submitForm($event)">
                                     <?php if (isset($_SESSION['isLoggedIn'])): ?>
                                         <!-- CSRF token only for logged-in users -->
                                         <input type="hidden" name="csrf_token" value="<?= Helper::generateCSRFToken(); ?>">

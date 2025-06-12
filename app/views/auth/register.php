@@ -24,8 +24,9 @@
                               const password = form.password.value;
                               const confirmPassword = form.confirm_password.value;
                               const captcha = form.captcha_answer.value.trim();
+                              const csrfToken = form.csrf_token.value;
 
-                              if (!username || !password || !confirmPassword || !captcha) {
+                              if (!username || !password || !confirmPassword || !captcha || !csrfToken) {
                                   alert('Semua field wajib diisi!'); $event.preventDefault(); return false;
                               }
                               if (password !== confirmPassword) {
@@ -38,6 +39,22 @@
                               if (password.length < 8) {
                                   alert('Password minimal 8 karakter!'); $event.preventDefault(); return false;
                               }
+
+                              // Basic XSS prevention on client side
+                              const xssPattern = /<[^>]*>|javascript:|on\w+\s*=|data:text\/html|data:image\/svg\+xml/i;
+                              if (xssPattern.test(username)) {
+                                  alert('Karakter tidak valid dalam username!');
+                                  $event.preventDefault();
+                                  return false;
+                              }
+
+                              // Validate CSRF token format
+                              if (!/^[a-f0-9]{64}$/.test(csrfToken)) {
+                                  alert('Token keamanan tidak valid!');
+                                  $event.preventDefault();
+                                  return false;
+                              }
+
                               loading = true;
                           ">
 
@@ -45,24 +62,32 @@
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                            <input id="username" name="username" type="text" required maxlength="50" pattern="^[a-zA-Z0-9_]+$" placeholder="Masukkan username Anda" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                            <input id="username" name="username" type="text" required maxlength="50" pattern="^[a-zA-Z0-9_]+$" title="Username hanya boleh mengandung huruf, angka, dan underscore" placeholder="Masukkan username Anda" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md"
+                                oninvalid="this.setCustomValidity('Username hanya boleh mengandung huruf, angka, dan underscore')"
+                                oninput="this.setCustomValidity('')">
                             <div class="text-xs text-gray-500 mt-1">Hanya huruf, angka, dan underscore</div>
                         </div>
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                            <input id="name" name="name" type="text" required maxlength="100" placeholder="Masukkan nama lengkap Anda" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                            <input id="name" name="name" type="text" required maxlength="100" title="Nama harus diisi" placeholder="Masukkan nama lengkap Anda" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md"
+                                oninvalid="this.setCustomValidity('Nama harus diisi')"
+                                oninput="this.setCustomValidity('')">
                         </div>
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                            <input id="email" name="email" type="email" required maxlength="100" placeholder="Masukkan email Anda" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                            <input id="email" name="email" type="email" required maxlength="100" title="Masukkan alamat email yang valid" placeholder="Masukkan email Anda" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md"
+                                oninvalid="this.setCustomValidity('Masukkan alamat email yang valid')"
+                                oninput="this.setCustomValidity('')">
                         </div>
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
                             <div class="mt-1 relative">
-                                <input :type="showPassword ? 'text' : 'password'" id="password" name="password" required minlength="8" placeholder="Buat kata sandi Anda" class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
+                                <input :type="showPassword ? 'text' : 'password'" id="password" name="password" required minlength="8" title="Password minimal 8 karakter dengan huruf besar, kecil, dan angka" placeholder="Masukkan password Anda" class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10"
+                                    oninvalid="this.setCustomValidity('Password minimal 8 karakter dengan huruf besar, kecil, dan angka')"
+                                    oninput="this.setCustomValidity('')">
                                 <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none" :class="{ 'opacity-70': !showPassword, 'opacity-100': showPassword }">
                                     <svg x-show="!showPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
@@ -79,7 +104,9 @@
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="confirm_password" class="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
                             <div class="mt-1 relative">
-                                <input :type="showConfirmPassword ? 'text' : 'password'" id="confirm_password" name="confirm_password" required placeholder="Masukkan ulang kata sandi Anda" class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
+                                <input :type="showConfirmPassword ? 'text' : 'password'" id="confirm_password" name="confirm_password" required minlength="8" title="Password harus sama dengan password sebelumnya" placeholder="Konfirmasi password Anda" class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10"
+                                    oninvalid="this.setCustomValidity('Password harus sama dengan password sebelumnya')"
+                                    oninput="this.setCustomValidity('')">
                                 <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none" :class="{ 'opacity-70': !showConfirmPassword, 'opacity-100': showConfirmPassword }">
                                     <svg x-show="!showConfirmPassword" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />

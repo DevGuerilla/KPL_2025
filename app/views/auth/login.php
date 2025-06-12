@@ -32,18 +32,26 @@
                                   const username = form.username.value.trim();
                                   const password = form.password.value;
                                   const captcha = form.captcha_answer.value.trim();
+                                  const csrfToken = form.csrf_token.value;
 
                                   // Client-side validation
-                                  if (!username || !password || !captcha) {
+                                  if (!username || !password || !captcha || !csrfToken) {
                                       alert('Semua field wajib diisi!');
                                       event.preventDefault();
                                       return false;
                                   }
 
                                   // Basic XSS prevention on client side
-                                  if (username.includes('<') || username.includes('>') ||
-                                      username.includes('script') || username.includes('javascript:')) {
+                                  const xssPattern = /<[^>]*>|javascript:|on\w+\s*=|data:text\/html|data:image\/svg\+xml/i;
+                                  if (xssPattern.test(username)) {
                                       alert('Karakter tidak valid dalam username!');
+                                      event.preventDefault();
+                                      return false;
+                                  }
+
+                                  // Validate CSRF token format
+                                  if (!/^[a-f0-9]{64}$/.test(csrfToken)) {
+                                      alert('Token keamanan tidak valid!');
                                       event.preventDefault();
                                       return false;
                                   }
@@ -76,7 +84,10 @@
                                        title="Username hanya boleh mengandung huruf, angka, dan underscore"
                                        placeholder="Masukkan username Anda"
                                        autocomplete="username"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
+                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md"
+                                       oninvalid="this.setCustomValidity('Username hanya boleh mengandung huruf, angka, dan underscore')"
+                                       oninput="this.setCustomValidity('')">
+                                <div class="text-xs text-gray-500 mt-1">Hanya huruf, angka, dan underscore</div>
                             </div>
                         </div>
 
@@ -88,9 +99,12 @@
                                        name="password"
                                        required
                                        minlength="8"
-                                       placeholder="Masukkan kata sandi"
+                                       title="Password minimal 8 karakter"
+                                       placeholder="Masukkan password Anda"
                                        autocomplete="current-password"
-                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
+                                       class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10"
+                                       oninvalid="this.setCustomValidity('Password minimal 8 karakter')"
+                                       oninput="this.setCustomValidity('')">
                                 <button type="button"
                                         @click="showPassword = !showPassword"
                                         class="absolute inset-y-0 right-0 px-3 flex items-center transition-opacity duration-300 outline-none"
