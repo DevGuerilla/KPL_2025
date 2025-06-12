@@ -1,24 +1,16 @@
-<style>
-    [x-cloak] {
-        display: none !important;
-    }
-</style>
+<?php
+// app/views/auth/login.php - Updated with XSS protection
+?>
+<style>[x-cloak] { display: none !important; }</style>
 
-<div class="min-h-screen flex items-center justify-center p-4"
-     x-data="{ show: false }"
-     x-init="setTimeout(() => show = true, 150)">
-    <div x-cloak
-         x-show="show"
-         x-transition:enter="transition duration-1000 ease-out"
-         x-transition:enter-start="opacity-0 -translate-y-60"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         class="bg-white w-full max-w-6xl rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+<div class="min-h-screen flex items-center justify-center p-4" x-data="{ show: false }" x-init="setTimeout(() => show = true, 150)">
+    <div x-cloak x-show="show" x-transition:enter="transition duration-1000 ease-out" x-transition:enter-start="opacity-0 -translate-y-60" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white w-full max-w-6xl rounded-2xl shadow-lg overflow-hidden border border-gray-200">
         <div class="flex flex-col md:flex-row">
             <div class="w-full md:w-1/2 p-8 lg:p-12">
                 <div class="max-w-md mx-auto">
                     <div class="text-center md:text-left">
-                        <a href="<?= BASEURL; ?>">
-                            <img src="<?= BASEURL; ?>/img/logo_only1.png" alt="Uptime Logo" class="mb-3 w-auto mx-auto md:mx-0 transform hover:scale-105 transition-transform duration-500">
+                        <a href="<?= Helper::sanitizeURL(BASEURL); ?>">
+                            <img src="<?= Helper::sanitizeAttribute(BASEURL); ?>/img/logo_only1.png" alt="Uptime Logo" class="mb-3 w-auto mx-auto md:mx-0 transform hover:scale-105 transition-transform duration-500">
                         </a>
                         <h3 class="text-2xl font-bold text-gray-900">Masuk ke Blog Campus</h3>
                         <p class="my-2 text-base text-gray-600">Bagikan cerita dan pengalamanmu di kampus</p>
@@ -26,38 +18,43 @@
 
                     <?php Flasher::flash(); ?>
 
-                    <form action="<?= BASEURL; ?>/auth/doLogin" method="POST" class="space-y-6 mt-8"
+                    <form action="<?= Helper::sanitizeAttribute(BASEURL); ?>/auth/doLogin" method="POST" class="space-y-6 mt-8"
                           x-data="{
                               loading: false,
                               refreshCaptcha: false,
                               submitForm(event) {
-                                  // Prevent double submission
                                   if (this.loading) {
                                       event.preventDefault();
                                       return false;
                                   }
 
-                                  // Basic validation
                                   const form = event.target;
                                   const username = form.username.value.trim();
                                   const password = form.password.value;
                                   const captcha = form.captcha_answer.value.trim();
 
+                                  // Client-side validation
                                   if (!username || !password || !captcha) {
                                       alert('Semua field wajib diisi!');
                                       event.preventDefault();
                                       return false;
                                   }
 
-                                  this.loading = true;
+                                  // Basic XSS prevention on client side
+                                  if (username.includes('<') || username.includes('>') ||
+                                      username.includes('script') || username.includes('javascript:')) {
+                                      alert('Karakter tidak valid dalam username!');
+                                      event.preventDefault();
+                                      return false;
+                                  }
 
-                                  // Set timeout to reset loading state if form takes too long
+                                  this.loading = true;
                                   setTimeout(() => {
                                       if (this.loading) {
                                           this.loading = false;
                                           alert('Login timeout. Silakan coba lagi.');
                                       }
-                                  }, 15000); // 15 seconds timeout
+                                  }, 15000);
 
                                   return true;
                               }
@@ -65,7 +62,7 @@
                           @submit="submitForm($event)">
 
                         <!-- CSRF Token -->
-                        <input type="hidden" name="csrf_token" value="<?= Helper::generateCSRFToken(); ?>">
+                        <?= Helper::renderCSRFField(); ?>
 
                         <div class="transform transition duration-300 hover:-translate-y-1">
                             <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
@@ -75,20 +72,24 @@
                                        type="text"
                                        required
                                        maxlength="50"
+                                       pattern="^[a-zA-Z0-9_]+$"
+                                       title="Username hanya boleh mengandung huruf, angka, dan underscore"
                                        placeholder="Masukkan username Anda"
+                                       autocomplete="username"
                                        class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
                             </div>
                         </div>
 
-                        <div class="transform transition duration-300 hover:-translate-y-1"
-                             x-data="{ showPassword: false }">
+                        <div class="transform transition duration-300 hover:-translate-y-1" x-data="{ showPassword: false }">
                             <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
                             <div class="mt-1 relative">
                                 <input :type="showPassword ? 'text' : 'password'"
                                        id="password"
                                        name="password"
                                        required
+                                       minlength="8"
                                        placeholder="Masukkan kata sandi"
+                                       autocomplete="current-password"
                                        class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10">
                                 <button type="button"
                                         @click="showPassword = !showPassword"
@@ -115,10 +116,10 @@
                                             <?php
                                             try {
                                                 $captchaQuestion = Captcha::generateCaptcha();
-                                                echo "<span>$captchaQuestion = ?</span>";
+                                                echo "<span>" . Helper::sanitizeOutput($captchaQuestion) . " = ?</span>";
                                             } catch (Exception $e) {
-                                                echo "<span>5 + 3 = ?</span>"; // Fallback captcha
-                                                error_log('CAPTCHA generation error: ' . $e->getMessage());
+                                                echo "<span>5 + 3 = ?</span>";
+                                                Logger::error('CAPTCHA generation error: ' . $e->getMessage());
                                             }
                                             ?>
                                             <button type="button"
@@ -133,6 +134,8 @@
                                     <input type="number"
                                            name="captcha_answer"
                                            required
+                                           min="0"
+                                           max="100"
                                            placeholder="Jawaban"
                                            class="block w-24 px-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md">
                                 </div>
@@ -164,7 +167,7 @@
                         <div class="text-center transform transition duration-300 hover:-translate-y-1">
                             <p class="text-sm text-gray-600">
                                 Belum punya akun?
-                                <a href="<?= BASEURL; ?>/auth/register" class="font-medium text-blue-500 hover:text-blue-600 transition-colors duration-300">
+                                <a href="<?= Helper::sanitizeAttribute(BASEURL); ?>/auth/register" class="font-medium text-blue-500 hover:text-blue-600 transition-colors duration-300">
                                     Bergabung Sekarang
                                 </a>
                             </p>
