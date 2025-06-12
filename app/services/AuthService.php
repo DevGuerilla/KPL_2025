@@ -63,8 +63,12 @@ class AuthService
 
         // Attempt authentication
         Logger::activity('Login attempt', ['username' => $credentials['username']]);
-        $user = $this->userModel->getUserByUsername($credentials['username']);
-
+        $user = $this->userModel->getUserByUsername(htmlspecialchars($credentials['username']));
+        foreach ($user as $key => $value) {
+            if (is_string($value)) {
+                $user[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            }
+        }
         if ($user && password_verify($credentials['password'], $user['password'])) {
             Logger::info('User logged in successfully.', [
                 'user_id' => $user['id_user'],
@@ -147,7 +151,7 @@ class AuthService
 
         // Create user
         $hashedPassword = password_hash($userData['password'], PASSWORD_DEFAULT);
-        $profilePic = 'https://ui-avatars.com/api/?name=' . urlencode($userData['name']) . '&background=random&color=fff&font-size=0.5';
+        $profilePic = 'default.png';
 
         $newUser = [
             'username' => $userData['username'],

@@ -171,6 +171,12 @@ class Dashboard extends Controller
 
         if ($this->userModel->updateProfile($data) > 0) {
             $user = $this->userModel->getUserById($user['id_user']);
+            // Sanitize user data before storing in session
+            foreach ($user as $key => $value) {
+                if (is_string($value)) {
+                    $user[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                }
+            }
             $_SESSION['myProfile'] = $user;
             Flasher::setFlash(true, ['message' => 'Profile berhasil diubah!']);
         } else {
@@ -214,7 +220,7 @@ class Dashboard extends Controller
         $this->validatePostField($_POST);
 
         if ($_FILES['image']['error'] === 4) {
-            $_POST['image'] = 'default.jpg';
+            $_POST['image'] = 'default.png';
         } else {
             $_POST['image'] = UploadFile::upload($_FILES, 'image', 'posts');
         }
