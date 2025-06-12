@@ -101,8 +101,51 @@ class Dashboard extends Controller
         $user = $this->userModel->getUserById($_SESSION['myProfile']['id_user']);
         $data['id_user'] = $user['id_user'];
 
-        $this->validateUpdateProfile($data);
+        // Jika dari popup password (change_password_only)
+        if (isset($_POST['change_password_only'])) {
+            if (empty($data['old_password']) || empty($data['password']) || empty($data['confirm_password'])) {
+                Flasher::setFlash(false, ['message' => 'Semua field password harus diisi.']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+            if (!password_verify($data['old_password'], $user['password'])) {
+                Flasher::setFlash(false, ['message' => 'Password lama tidak sesuai.']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+            if ($data['password'] !== $data['confirm_password']) {
+                Flasher::setFlash(false, ['message' => 'Konfirmasi password tidak sesuai.']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+            if (strlen($data['password']) < 6) {
+                Flasher::setFlash(false, ['message' => 'Password baru minimal 6 karakter.']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 
+            // Update hanya password
+            if ($this->userModel->updateProfile([
+                'id_user' => $user['id_user'],
+                'password' => $data['password'],
+                'name' => $user['name'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'image' => $user['profile_picture_url']
+            ]) > 0) {
+                $user = $this->userModel->getUserById($user['id_user']);
+                $_SESSION['myProfile'] = $user;
+                Flasher::setFlash(true, ['message' => 'Password berhasil diubah!']);
+            } else {
+                Flasher::setFlash(false, ['message' => 'Password gagal diubah!']);
+            }
+            header('Location: ' . BASEURL . '/dashboard/profile');
+            exit;
+        }
+
+        // jika tidak dari popup password, proses update profile biasa
+        $this->validateUpdateProfile($data);
 
         if ($_FILES['image']['error'] === 4) {
             $data['image'] = $user['profile_picture_url'];
@@ -110,7 +153,6 @@ class Dashboard extends Controller
             $data['image'] = UploadFile::upload($_FILES, 'image', 'users');
         }
 
-        // jika password diisi, maka cek old password apakah sama, jika sama, cek apakah password dan konfirmasi password sama
         if (!empty($data['password'])) {
             if (!password_verify($data['old_password'], $user['password'])) {
                 Flasher::setFlash(false, ['message' => 'Password lama tidak sesuai.']);
@@ -122,7 +164,6 @@ class Dashboard extends Controller
                 header('Location: ' . BASEURL . '/dashboard/profile');
                 exit;
             }
-
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         } else {
             $data['password'] = $user['password'];
@@ -130,7 +171,6 @@ class Dashboard extends Controller
 
         if ($this->userModel->updateProfile($data) > 0) {
             $user = $this->userModel->getUserById($user['id_user']);
-            // Helper::dd($user);
             $_SESSION['myProfile'] = $user;
             Flasher::setFlash(true, ['message' => 'Profile berhasil diubah!']);
         } else {
@@ -139,7 +179,6 @@ class Dashboard extends Controller
 
         header('Location: ' . BASEURL . '/dashboard/profile');
     }
-
 
     public function posts()
     {

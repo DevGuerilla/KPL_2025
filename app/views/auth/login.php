@@ -98,8 +98,8 @@
                                        id="password"
                                        name="password"
                                        required
-                                       minlength="8"
-                                       title="Password minimal 8 karakter"
+                                       minlength="6"
+                                       title="Password minimal 6 karakter"
                                        placeholder="Masukkan password Anda"
                                        autocomplete="current-password"
                                        class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300 shadow-sm hover:shadow-md pr-10"

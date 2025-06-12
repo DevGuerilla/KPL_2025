@@ -5,27 +5,11 @@
         <!-- Header Section -->
         <div class="text-center mb-16">
             <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent font-poppins mb-4">
-                Discover Stories
+                Temukan Cerita
             </h1>
             <p class="text-lg text-gray-600 font-poppins max-w-2xl mx-auto">
-                Explore the latest insights and knowledge from our community
+                Jelajahi wawasan dan pengetahuan terbaru dari komunitas kami
             </p>
-        </div>
-
-        <!-- Category Pills -->
-        <div class="flex flex-wrap gap-2 justify-center mb-12">
-            <button class="px-6 py-2 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 shadow-sm">
-                All
-            </button>
-            <button class="px-6 py-2 rounded-full bg-blue-50 border border-blue-200 text-sm font-medium text-blue-600 transition-all duration-300 shadow-sm">
-                Web Dev
-            </button>
-            <button class="px-6 py-2 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 shadow-sm">
-                Design
-            </button>
-            <button class="px-6 py-2 rounded-full bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 shadow-sm">
-                Tutorial
-            </button>
         </div>
 
         <!-- Posts Grid -->
@@ -35,18 +19,18 @@
                 <!-- Post Card Template -->
                 <article class="group bg-white backdrop-blur-lg bg-opacity-90 rounded-3xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden border border-gray-100/50">
                     <div class="relative overflow-hidden rounded-t-3xl">
-                        <img src="<?= BASEURL . '/img/posts/' . $post['post']['image']; ?>" alt="Post Image"
+                        <img src="<?= BASEURL . '/img/posts/' . $post['post']['image']; ?>" alt="Gambar Postingan"
                             class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out">
                         <div class="absolute top-4 right-4 bg-black/40 backdrop-blur-md rounded-full px-4 py-1.5 
                                 transform group-hover:translate-x-1 transition-all duration-500">
-                            <span class="text-white text-xs font-medium">5 min read</span>
+                            <span class="text-white text-xs font-medium">5 menit baca</span>
                         </div>
                     </div>
 
                     <div class="p-7">
                         <div class="flex items-center mb-5 space-x-4">
                             <div class="relative transform group-hover:scale-105 transition-all duration-300">
-                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" alt="Author"
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" alt="Penulis"
                                     class="w-12 h-12 rounded-full border-2 border-white shadow-md">
                                 <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white 
                                        group-hover:scale-110 transition-transform duration-300"></div>
@@ -74,7 +58,7 @@
                             </div>
                             <a href="<?= BASEURL; ?>/posts/detail/<?= $post['post']['id_post']; ?>" class="group inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-semibold 
                                      px-4 py-2 rounded-full hover:bg-blue-50 transition-all duration-300">
-                                Read more
+                                Baca selengkapnya
                                 <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-2 transition-transform duration-300"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -88,26 +72,8 @@
         </div>
 
         <!-- Modern Pagination -->
-        <div class="mt-16 flex justify-center">
-            <nav class="flex items-center space-x-3 bg-white rounded-full shadow-lg border border-gray-100/50 p-2"
-                aria-label="Pagination">
-                <button class="p-2.5 rounded-full text-gray-600 hover:bg-blue-50 hover:text-blue-600 
-                             transform hover:scale-110 transition-all duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <span class="px-5 py-2 text-sm font-medium text-gray-700 border-l border-r border-gray-200">
-                    Page 1 of 3
-                </span>
-                <button class="p-2.5 rounded-full text-gray-600 hover:bg-blue-50 hover:text-blue-600 
-                             transform hover:scale-110 transition-all duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </nav>
-        </div>
+        <!-- Pagination dihapus -->
+
     </div>
 </div>
 
