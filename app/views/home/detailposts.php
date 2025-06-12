@@ -82,7 +82,7 @@ include_once __DIR__ . '/../../core/Helper.php';
             </div>
 
             <div class="prose max-w-none text-gray-600 mb-8">
-                <?= $data['post']['post']['content']; ?>
+                <?= Helper::sanitizeHTML($data['post']['post']['content']); ?>
             </div>
 
             <div class="flex flex-wrap gap-2 mb-6 pt-4 border-t border-gray-100">

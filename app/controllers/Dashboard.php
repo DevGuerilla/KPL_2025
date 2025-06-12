@@ -36,6 +36,11 @@ class Dashboard extends Controller
     // post profile update jika tidak ada image ataupun tidak ada password itu boleh di update, jjika ada update sesuai yang ada , jika image gaada pake yang dari datatbase, misal password gaakada, ambil yang dari database, image gaada ambiil yyang dari database usermodel
     public function doProfile()
     {
+        if (!isset($_POST['csrf_token']) || !Helper::validateCSRFToken($_POST['csrf_token'])) {
+            Flasher::setFlash(false, ['message' => 'Token keamanan tidak valid. Silakan muat ulang halaman.']);
+            header('Location: ' . BASEURL . '/dashboard/profile');
+            exit;
+        }
         $data = $_POST;
         $user = $this->userModel->getUserById($_SESSION['myProfile']['id_user']);
         $data['id_user'] = $user['id_user'];
@@ -89,6 +94,11 @@ class Dashboard extends Controller
             header('Location: ' . BASEURL . '/dashboard/createpost');
             exit;
         }
+        if (!isset($_POST['csrf_token']) || !Helper::validateCSRFToken($_POST['csrf_token'])) {
+            Flasher::setFlash(false, ['message' => 'Token keamanan tidak valid. Silakan muat ulang halaman.']);
+            header('Location: ' . BASEURL . '/dashboard/createpost');
+            exit;
+        }
 
         $_POST['id_user'] = $_SESSION['myProfile']['id_user'];
 
@@ -121,6 +131,11 @@ class Dashboard extends Controller
             header('Location: ' . BASEURL . '/dashboard/posts');
             exit;
         }
+        if (!isset($_POST['csrf_token']) || !Helper::validateCSRFToken($_POST['csrf_token'])) {
+            Flasher::setFlash(false, ['message' => 'Token keamanan tidak valid. Silakan muat ulang halaman.']);
+            header('Location: ' . BASEURL . '/dashboard/posts');
+            exit;
+        }
 
         $_POST['id_user'] = $_SESSION['myProfile']['id_user'];
 
@@ -141,6 +156,11 @@ class Dashboard extends Controller
 
     public function deletepost()
     {
+        if (!isset($_POST['csrf_token']) || !Helper::validateCSRFToken($_POST['csrf_token'])) {
+            Flasher::setFlash(false, ['message' => 'Token keamanan tidak valid. Silakan muat ulang halaman.']);
+            header('Location: ' . BASEURL . '/dashboard/posts');
+            exit;
+        }
         if ($this->postModel->deletePost($_POST['id']) > 0) {
             Flasher::setFlash(true, ['message' => 'Post berhasil dihapus!']);
         } else {
@@ -151,6 +171,11 @@ class Dashboard extends Controller
     }
     public function recoverpost()
     {
+        if (!isset($_POST['csrf_token']) || !Helper::validateCSRFToken($_POST['csrf_token'])) {
+            Flasher::setFlash(false, ['message' => 'Token keamanan tidak valid. Silakan muat ulang halaman.']);
+            header('Location: ' . BASEURL . '/dashboard/posts');
+            exit;
+        }
         if ($this->postModel->recoverPost($_POST['id']) > 0) {
             Flasher::setFlash(true, ['message' => 'Post berhasil direcover!']);
         } else {
