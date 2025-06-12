@@ -16,10 +16,10 @@ class Post_model
     public function getAllPost()
     {
         $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
-              FROM ' . $this->table . ' p
-              JOIN user u ON p.id_user = u.id_user
-              WHERE p.deleted_at IS NULL
-              ORDER BY p.created_at DESC';
+                  FROM ' . $this->table . ' p
+                  JOIN user u ON p.id_user = u.id_user
+                  WHERE p.deleted_at IS NULL
+                  ORDER BY p.created_at DESC';
         $this->db->query($query);
         return $this->db->resultSet();
     }
@@ -27,9 +27,9 @@ class Post_model
     public function getAllPostSoftDelete()
     {
         $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
-              FROM ' . $this->table . ' p
-              JOIN user u ON p.id_user = u.id_user
-              ORDER BY p.created_at DESC';
+                  FROM ' . $this->table . ' p
+                  JOIN user u ON p.id_user = u.id_user
+                  ORDER BY p.created_at DESC';
         $this->db->query($query);
         return $this->db->resultSet();
     }
@@ -37,11 +37,11 @@ class Post_model
     public function getAllPostRandom(Int $limit)
     {
         $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
-              FROM ' . $this->table . ' p
-              JOIN user u ON p.id_user = u.id_user
-              WHERE p.deleted_at IS NULL
-              ORDER BY RAND()
-              LIMIT :limit';
+                  FROM ' . $this->table . ' p
+                  JOIN user u ON p.id_user = u.id_user
+                  WHERE p.deleted_at IS NULL
+                  ORDER BY RAND()
+                  LIMIT :limit';
         $this->db->query($query);
         $this->db->bind('limit', $limit);
         return $this->db->resultSet();
@@ -50,9 +50,9 @@ class Post_model
     public function getPostById(Int $id)
     {
         $query = 'SELECT p.id_post, p.title, p.content, p.image, p.created_at, p.updated_at, u.username, u.name, u.profile_picture_url
-              FROM ' . $this->table . ' p
-              JOIN user u ON p.id_user = u.id_user
-              WHERE p.id_post = :id AND p.deleted_at IS NULL';
+                  FROM ' . $this->table . ' p
+                  JOIN user u ON p.id_user = u.id_user
+                  WHERE p.id_post = :id AND p.deleted_at IS NULL';
         $this->db->query($query);
         $this->db->bind('id', $id);
         return $this->db->single();
@@ -64,7 +64,7 @@ class Post_model
 
         try {
             $query = 'INSERT INTO post (title, content, image, id_user, created_at, updated_at)
-              VALUES (:title, :content, :image, :id_user, :created_at, :updated_at)';
+                      VALUES (:title, :content, :image, :id_user, :created_at, :updated_at)';
             $this->db->query($query);
             $this->db->bind('title', $data['title']);
             $this->db->bind('content', $data['content']);
@@ -128,8 +128,8 @@ class Post_model
 
         try {
             $query = 'UPDATE post
-              SET title = :title, content = :content, image = :image, updated_at = :updated_at
-              WHERE id_post = :id_post';
+                      SET title = :title, content = :content, image = :image, updated_at = :updated_at
+                      WHERE id_post = :id_post';
             $this->db->query($query);
             $this->db->bind('title', $data['title']);
             $this->db->bind('content', $data['content']);
@@ -244,7 +244,6 @@ class Post_model
         ];
     }
 
-
     public function getAllPostTagsById()
     {
         $query = 'SELECT 
@@ -285,11 +284,10 @@ class Post_model
     public function getRecentPostByUserId(Int $id)
     {
         $query = 'SELECT p.id_post, p.title, p.content, p.image, u.username, u.name, u.profile_picture_url, p.created_at, p.deleted_at
-              FROM ' . $this->table . ' p
-              JOIN user u ON p.id_user = u.id_user
-              WHERE p.id_user = :id
-              ORDER BY p.created_at DESC
-              LIMIT 3';
+                  FROM ' . $this->table . ' p
+                  JOIN user u ON p.id_user = u.id_user
+                  WHERE p.id_user = :id
+                  ORDER BY p.created_at DESC';
         $this->db->query($query);
         $this->db->bind('id', $id);
         return $this->db->resultSet();
