@@ -13,7 +13,17 @@ class Flasher
     {
         if (isset($_SESSION['flash'])) {
             $success = $_SESSION['flash']['success'];
-            $message = $_SESSION['flash']['data']['message'];
+
+            // FIX: Handle both old and new flash message formats
+            $data = $_SESSION['flash']['data'];
+
+            // If data is a string, convert it to array format
+            if (is_string($data)) {
+                $message = $data;
+            } else {
+                // If data is array, get the message
+                $message = $data['message'] ?? 'Unknown message';
+            }
 
             if ($success) {
                 echo '<div class="mb-4 rounded-lg bg-green-50 p-4">
@@ -24,7 +34,7 @@ class Flasher
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm font-medium text-green-800">' . $message . '</p>
+                                <p class="text-sm font-medium text-green-800">' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . '</p>
                             </div>
                         </div>
                     </div>';
@@ -37,7 +47,7 @@ class Flasher
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm font-medium text-red-800">' . $message . '</p>
+                                <p class="text-sm font-medium text-red-800">' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . '</p>
                             </div>
                         </div>
                     </div>';

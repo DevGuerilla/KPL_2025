@@ -152,24 +152,27 @@ include_once __DIR__ . '/../../core/Helper.php';
                                 </div>
                                 <form method="POST" action="<?= BASEURL; ?>/posts/detail/<?= $data['post']['post']['id_post']; ?>" class="mt-2">
                                     <?php if (isset($_SESSION['isLoggedIn'])): ?>
+                                        <!-- CSRF token only for logged-in users -->
+                                        <input type="hidden" name="csrf_token" value="<?= Helper::generateCSRFToken(); ?>">
                                         <input type="hidden" name="username" value="<?= htmlspecialchars($_SESSION['myProfile']['username']); ?>">
-                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? ''; ?>">
                                     <?php else: ?>
+                                        <!-- Guest users - same as original -->
                                         <input type="hidden" name="username" value="Tamu">
                                     <?php endif; ?>
-                                    
+
                                     <textarea name="comment" rows="3" required
-                                            class="w-full p-4 bg-white border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 
+                                              maxlength="1000"
+                                              class="w-full p-4 bg-white border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500
                                                    focus:border-transparent transition-all resize-none outline-none shadow-sm mb-3"
-                                            placeholder="Bagikan pendapat Anda..."></textarea>
-                                    
+                                              placeholder="Bagikan pendapat Anda..."></textarea>
+
                                     <div class="flex justify-end">
                                         <button type="submit"
-                                                class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 
+                                                class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700
                                                        transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-lg">
                                             <span>Kirim</span>
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                             </svg>
                                         </button>
