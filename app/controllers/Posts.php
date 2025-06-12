@@ -27,14 +27,33 @@ class Posts extends Controller
     public function detail(Int $id)
     {
         $data['post'] = $this->postModel->getPostTagsCommentById($id);
+
+        // Check if post exists
+        if (!$data['post'] || !$data['post']['post']) {
+            // Redirect to 404 or posts list
+            header('Location: ' . BASEURL . '/posts');
+            exit();
+        }
+
         $data['judul'] = 'Posts: ' . $data['post']['post']['title'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+                // Debug: Log what we received
+                Logger::debug('Comment submission attempt', [
+                    'post_data' => $_POST,
+                    'session_exists' => isset($_SESSION['isLoggedIn']),
+                    'user_id' => $_SESSION['myProfile']['id_user'] ?? 'guest'
+                ]);
+
                 // Validate CSRF token ONLY for logged-in users
                 if (isset($_SESSION['isLoggedIn'])) {
                     if (!isset($_POST['csrf_token']) || !Helper::validateCSRFToken($_POST['csrf_token'])) {
-                        Flasher::setFlash(false, ['message' => 'Invalid security token']);
+                        Logger::warning('CSRF token validation failed', [
+                            'post_id' => $id,
+                            'user_id' => $_SESSION['myProfile']['id_user'] ?? 'unknown'
+                        ]);
+                        Flasher::setFlash(false, ['message' => 'Token keamanan tidak valid. Silakan muat ulang halaman.']);
                         header('Location: ' . BASEURL . '/posts/detail/' . $id);
                         exit();
                     }
@@ -45,6 +64,13 @@ class Posts extends Controller
 
                 if (empty($comment)) {
                     Flasher::setFlash(false, ['message' => 'Komentar tidak boleh kosong!']);
+                    header('Location: ' . BASEURL . '/posts/detail/' . $id);
+                    exit();
+                }
+
+                // Check comment length (show user-friendly message)
+                if (strlen($comment) > 1000) {
+                    Flasher::setFlash(false, ['message' => 'Komentar terlalu panjang! Maksimal 1000 karakter.']);
                     header('Location: ' . BASEURL . '/posts/detail/' . $id);
                     exit();
                 }
@@ -65,26 +91,41 @@ class Posts extends Controller
                 $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
 
                 // Add comment
-                $this->commentModel->addComment($id, $idUser, $username, $comment);
+                $result = $this->commentModel->addComment($id, $idUser, $username, $comment);
 
-                // Set success message
-                Flasher::setFlash(true, ['message' => 'Komentar telah disubmit!']);
+                if ($result) {
+                    // Set success message
+                    Flasher::setFlash(true, ['message' => 'Komentar berhasil ditambahkan!']);
 
-                // Log activity
-                Logger::activity('Comment added', [
-                    'post_id' => $id,
-                    'username' => $username,
-                    'is_guest' => is_null($idUser)
-                ]);
+                    // Log activity
+                    Logger::activity('Comment added successfully', [
+                        'post_id' => $id,
+                        'username' => $username,
+                        'is_guest' => is_null($idUser),
+                        'comment_length' => strlen($comment)
+                    ]);
+                } else {
+                    throw new Exception('Failed to save comment to database');
+                }
 
             } catch (Exception $e) {
-                // Log error
+                // Log error with more details
                 Logger::error('Failed to add comment', [
                     'post_id' => $id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'user_id' => $_SESSION['myProfile']['id_user'] ?? 'guest',
+                    'comment_length' => strlen($comment ?? '')
                 ]);
 
-                Flasher::setFlash(false, ['message' => 'Gagal menambahkan komentar. Silakan coba lagi.']);
+                // Show user-friendly error message
+                if (strpos($e->getMessage(), 'too long') !== false) {
+                    Flasher::setFlash(false, ['message' => 'Komentar terlalu panjang! Maksimal 1000 karakter.']);
+                } elseif (strpos($e->getMessage(), 'empty') !== false) {
+                    Flasher::setFlash(false, ['message' => 'Komentar tidak boleh kosong!']);
+                } else {
+                    Flasher::setFlash(false, ['message' => 'Gagal menambahkan komentar. Silakan coba lagi.']);
+                }
             }
 
             // Redirect to prevent form resubmission
@@ -141,6 +182,22 @@ class Posts extends Controller
                 'message' => 'Search failed'
             ]);
         }
+
+        exit;
+    }
+
+    // Debug method - remove in production
+    public function testComment($postId)
+    {
+        if (!isset($_SESSION['isLoggedIn'])) {
+            echo "Not logged in\n";
+        } else {
+            echo "User: " . $_SESSION['myProfile']['username'] . "\n";
+            echo "User ID: " . $_SESSION['myProfile']['id_user'] . "\n";
+        }
+
+        echo "Post ID: " . $postId . "\n";
+        echo "CSRF Token: " . Helper::generateCSRFToken() . "\n";
 
         exit;
     }
