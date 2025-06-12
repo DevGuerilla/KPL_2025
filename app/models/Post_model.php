@@ -186,17 +186,51 @@ class Post_model
 
     public function getPostByKeywordAndTags(string $keyword)
     {
-        $query = 'SELECT DISTINCT p.id_post, p.title, p.content, p.created_at, p.image, u.username, u.name, u.profile_picture_url
-                FROM ' . $this->table . ' p
-                JOIN user u ON p.id_user = u.id_user
-                LEFT JOIN tags t ON p.id_post = t.id_post
-                WHERE (p.title LIKE :keyword OR p.content LIKE :keyword OR t.tag_name LIKE :keyword) 
-                AND p.deleted_at IS NULL
-                ORDER BY p.created_at DESC';
+        $query = 'SELECT DISTINCT 
+                p.id_post, 
+                p.title, 
+                p.content, 
+                p.created_at, 
+                p.image as thumbnail,
+                u.username, 
+                u.name, 
+                u.profile_picture_url,
+                GROUP_CONCAT(DISTINCT t.tag_name) as tags
+              FROM ' . $this->table . ' p
+              JOIN user u ON p.id_user = u.id_user
+              LEFT JOIN tags t ON p.id_post = t.id_post
+              WHERE (p.title LIKE :keyword OR p.content LIKE :keyword OR t.tag_name LIKE :keyword) 
+              AND p.deleted_at IS NULL
+              GROUP BY p.id_post, p.title, p.content, p.created_at, p.image, u.username, u.name, u.profile_picture_url
+              ORDER BY p.created_at DESC';
 
         $this->db->query($query);
         $this->db->bind('keyword', '%' . $keyword . '%');
-        return $this->db->resultSet();
+        $results = $this->db->resultSet();
+
+        // Format results untuk frontend
+        $formattedResults = [];
+        foreach ($results as $result) {
+            $tags = [];
+            if (!empty($result['tags'])) {
+                $tagNames = explode(',', $result['tags']);
+                $tags = array_map('trim', $tagNames);
+            }
+
+            $formattedResults[] = [
+                'id_post' => $result['id_post'],
+                'title' => $result['title'],
+                'content' => Helper::excerpt($result['content'], 150), // Excerpt untuk preview
+                'thumbnail' => $result['thumbnail'],
+                'username' => $result['username'],
+                'name' => $result['name'],
+                'profile_picture_url' => $result['profile_picture_url'],
+                'created_at' => $result['created_at'],
+                'tags' => $tags
+            ];
+        }
+
+        return $formattedResults;
     }
 
     public function getPostTagsCommentById(Int $id)
