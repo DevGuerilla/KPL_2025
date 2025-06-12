@@ -88,6 +88,8 @@ foreach ($data['posts'] as $post) {
         </div> -->
     </div>
 
+    <?= Flasher::flash(); ?>
+
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div class="p-6 border-b border-gray-200">
             <div class="flex items-center justify-between">
@@ -163,6 +165,7 @@ foreach ($data['posts'] as $post) {
                                     </a>
                                     <?php if ($post['deleted_at'] == null) : ?>
                                         <form action="<?= BASEURL; ?>/dashboard/deletepost" method="POST" class="inline">
+                                            <?= Helper::renderCSRFField(); ?>
                                             <input type="hidden" name="id" value="<?= $post['id_post']; ?>">
                                             <button type="submit" class="text-red-600 hover:text-red-800 transition-colors cursor-pointer" onclick="return confirm('Apakah Anda yakin ingin menghapus artikel ini?')">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,6 +175,7 @@ foreach ($data['posts'] as $post) {
                                         </form>
                                     <?php else : ?>
                                         <form action="<?= BASEURL; ?>/dashboard/recoverpost" method="POST" class="inline">
+                                            <?= Helper::renderCSRFField(); ?>
                                             <input type="hidden" name="id" value="<?= $post['id_post']; ?>">
                                             <button type="submit" class="text-green-600 hover:text-green-800 transition-colors cursor-pointer" onclick="return confirm('Apakah Anda yakin ingin memulihkan artikel ini?')">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

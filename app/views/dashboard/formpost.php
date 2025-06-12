@@ -1,18 +1,23 @@
 <?php
 ob_start();
+$isEditMode = isset($data['post']);
+$pageTitle = $isEditMode ? 'Edit Artikel' : 'Buat Artikel Baru';
+$pageDescription = $isEditMode ? 'Edit dan perbarui artikel Anda' : 'Tulis dan terbitkan artikel baru Anda';
+$submitText = $isEditMode ? 'Perbarui' : 'Terbitkan';
 ?>
 
 <div class="space-y-4 mt-20">
     <div class="flex justify-between items-center">
         <div>
-            <h1 class="text-xl font-bold text-gray-900">Buat Artikel Baru</h1>
-            <p class="mt-1 text-sm text-gray-600">Tulis dan terbitkan artikel baru Anda</p>
+            <h1 class="text-xl font-bold text-gray-900"><?= $pageTitle; ?></h1>
+            <p class="mt-1 text-sm text-gray-600"><?= $pageDescription; ?></p>
         </div>
     </div>
+    <?= Flasher::flash(); ?>
     <div x-data="{ 
-        title: '<?= isset($data['post']['title']) ? $data['post']['title'] : ''; ?>', 
+        title: '<?= $isEditMode ? htmlspecialchars($data['post']['title'], ENT_QUOTES) : ''; ?>', 
         isPreview: false,
-        imageUrl: '<?= isset($data['post']['image']) ? BASEURL . '/img/posts/' . $data['post']['image'] : ''; ?>',
+        imageUrl: '<?= $isEditMode && $data['post']['image'] !== 'default.jpg' ? BASEURL . '/img/posts/' . $data['post']['image'] : ''; ?>',
         fileChosen(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -60,10 +65,13 @@ ob_start();
         }
     }">
         <!-- Main Form -->
-        <form action="<?= BASEURL . (isset($data['post']['id_post']) ? '/dashboard/doEditPost' : '/dashboard/doCreatePost'); ?>" enctype="multipart/form-data" id="postForm" method="post" class="space-y-4" x-show="!isPreview" @submit="submitForm($event)">
-            <input type="hidden" name="id_post" value="<?= isset($data['post']['id_post']) ? $data['post']['id_post'] : ''; ?>">
+        <form action="<?= BASEURL . ($isEditMode ? '/dashboard/doEditPost' : '/dashboard/doCreatePost'); ?>" enctype="multipart/form-data" id="postForm" method="post" class="space-y-4" x-show="!isPreview" @submit="submitForm($event)">
+            <?php if ($isEditMode): ?>
+                <input type="hidden" name="id_post" value="<?= $data['post']['id_post']; ?>">
+            <?php endif; ?>
             <!-- CSRF Token -->
             <?= Helper::renderCSRFField(); ?>
+
             <!-- First Row: Title and Tags (50-50 split) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <!-- Title Input (Left 50%) -->
@@ -72,6 +80,7 @@ ob_start();
                     <input type="text"
                         name="title"
                         x-model="title"
+                        value="<?= $isEditMode ? htmlspecialchars($data['post']['title'], ENT_QUOTES) : ''; ?>"
                         placeholder="Masukkan judul artikel..."
                         class="w-full text-lg outline-none border-b focus:border-blue-500 focus:ring-0 bg-transparent pb-1 px-4 py-1"
                         required>
@@ -93,7 +102,9 @@ ob_start();
                     <label class="block text-md font-medium text-gray-700 mb-2">Gambar Utama</label>
 
                     <!-- Image Preview -->
-                    <input type="text" name="old_image" value="<?= isset($data['post']['image']) ? $data['post']['image'] : ''; ?>" class="hidden">
+                    <?php if ($isEditMode): ?>
+                        <input type="hidden" name="old_image" value="<?= $data['post']['image']; ?>">
+                    <?php endif; ?>
                     <template x-if="imageUrl">
                         <div class="relative group mb-2">
                             <img :src="imageUrl"
@@ -132,7 +143,7 @@ ob_start();
                 <!-- Content Editor (Right 50%) -->
                 <div class="bg-white rounded-lg border border-gray-200 p-4 transition-all duration-300 hover:shadow-sm">
                     <label class="block text-md font-medium text-gray-700 mb-2">Konten Artikel</label>
-                    <input id="content" type="hidden" name="content" value="<?= isset($data['post']['content']) ? $data['post']['content'] : ''; ?>">
+                    <input id="content" type="hidden" name="content" value="<?= $isEditMode ? htmlspecialchars($data['post']['content'], ENT_QUOTES) : ''; ?>">
                     <trix-editor input="content" class="prose prose-slate text-justify leading-10 max-w-none h-[250px] bg-white rounded-lg" class="prose prose-slate"></trix-editor>
                 </div>
             </div>
@@ -142,7 +153,7 @@ ob_start();
                 <button type="submit" name="submit"
                     class="group relative px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-300 hover:shadow-sm overflow-hidden cursor-pointer">
                     <span class="relative z-10 transition-transform duration-300 group-hover:translate-x-1">
-                        Terbitkan
+                        <?= $submitText; ?>
                     </span>
                     <div class="absolute inset-0 bg-blue-700 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
                 </button>
@@ -208,14 +219,16 @@ ob_start();
             closeOnSelect: false
         }
     });
-    // set tagify value if isset $data['post'] with foreach to $data['tags']
-    <?php if (isset($data['post'])) : ?>
-        <?php foreach ($data['tags'] as $tag) : ?>
+
+    // Set tagify value for edit mode
+    <?php if ($isEditMode && isset($data['tags'])): ?>
+        <?php foreach ($data['tags'] as $tag): ?>
             tagify.addTags([{
-                value: '<?= $tag['tag_name']; ?>'
+                value: '<?= htmlspecialchars($tag['tag_name'], ENT_QUOTES); ?>'
             }]);
         <?php endforeach; ?>
     <?php endif; ?>
+
     // Prevent file attachments in Trix
     addEventListener("trix-file-accept", function(event) {
         event.preventDefault();

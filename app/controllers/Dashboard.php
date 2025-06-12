@@ -17,6 +17,62 @@ class Dashboard extends Controller
         $this->tagModel = $this->model('Tags_model');
     }
 
+    private function validatePostField($data, $isEdit = false)
+    {
+        $errors = [];
+
+        // diawali oleh isset lalu di check empty
+        if (!isset($data['title']) || empty(trim($data['title']))) {
+            $errors[] = 'Judul tidak boleh kosong.';
+        }
+        if (!isset($data['content']) || empty(trim($data['content']))) {
+            $errors[] = 'Konten tidak boleh kosong.';
+        }
+        if (!isset($data['tags']) || empty(trim($data['tags']))) {
+            $errors[] = 'Tag tidak boleh kosong.';
+        }
+
+        // user id
+        if (!isset($data['id_user']) || empty(trim($data['id_user']))) {
+            $errors[] = 'User ID tidak valid.';
+        }
+
+        // check apakah $error tidak kosong, jika tidak kosong, set flash message
+        if (!empty($errors)) {
+            Flasher::setFlash(false, ['message' => implode(' ', $errors)]);
+            // reload halaman
+            if ($isEdit) {
+                header('Location: ' . BASEURL . '/dashboard/editpost/' . $data['id_post']);
+            } else {
+                header('Location: ' . BASEURL . '/dashboard/createpost');
+            }
+            exit;
+        }
+    }
+
+    private function validateUpdateProfile($data)
+    {
+        $errors = [];
+
+        if (!isset($data['name']) || empty(trim($data['name']))) {
+            $errors[] = 'Nama tidak boleh kosong.';
+        }
+        if (!isset($data['email']) || empty(trim($data['email']))) {
+            $errors[] = 'Email tidak boleh kosong.';
+        }
+
+        // jika password diisi , maka password lama dan konfirmasi password harus diisi
+        if (!empty($data['password']) && (empty($data['old_password']) || empty($data['confirm_password']))) {
+            $errors[] = 'Jika mengubah password, maka password lama dan konfirmasi password harus diisi.';
+        }
+
+        if (!empty($errors)) {
+            Flasher::setFlash(false, ['message' => implode(' ', $errors)]);
+            header('Location: ' . BASEURL . '/dashboard/profile');
+            exit;
+        }
+    }
+
     public function index()
     {
         $data['posts'] = $this->postModel->getRecentPostByUserId($_SESSION['myProfile']['id_user']);
@@ -45,6 +101,8 @@ class Dashboard extends Controller
         $user = $this->userModel->getUserById($_SESSION['myProfile']['id_user']);
         $data['id_user'] = $user['id_user'];
 
+        $this->validateUpdateProfile($data);
+
 
         if ($_FILES['image']['error'] === 4) {
             $data['image'] = $user['profile_picture_url'];
@@ -52,10 +110,22 @@ class Dashboard extends Controller
             $data['image'] = UploadFile::upload($_FILES, 'image', 'users');
         }
 
-        if (empty($data['password'])) {
-            $data['password'] = $user['password'];
-        } else {
+        // jika password diisi, maka cek old password apakah sama, jika sama, cek apakah password dan konfirmasi password sama
+        if (!empty($data['password'])) {
+            if (!password_verify($data['old_password'], $user['password'])) {
+                Flasher::setFlash(false, ['message' => 'Password lama tidak sesuai.']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+            if ($data['password'] !== $data['confirm_password']) {
+                Flasher::setFlash(false, ['message' => 'Konfirmasi password tidak sesuai.']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        } else {
+            $data['password'] = $user['password'];
         }
 
         if ($this->userModel->updateProfile($data) > 0) {
@@ -84,7 +154,7 @@ class Dashboard extends Controller
     public function createPost()
     {
         $this->view('templates/header');
-        $this->view('dashboard/createpost');
+        $this->view('dashboard/formpost');
         $this->view('templates/footer');
     }
 
@@ -101,6 +171,8 @@ class Dashboard extends Controller
         }
 
         $_POST['id_user'] = $_SESSION['myProfile']['id_user'];
+
+        $this->validatePostField($_POST);
 
         if ($_FILES['image']['error'] === 4) {
             $_POST['image'] = 'default.jpg';
@@ -121,7 +193,7 @@ class Dashboard extends Controller
     {
         $data = $this->postModel->getPostTagsById($id);
         $this->view('templates/header');
-        $this->view('dashboard/createpost', $data);
+        $this->view('dashboard/formpost', $data);
         $this->view('templates/footer');
     }
 
@@ -138,6 +210,8 @@ class Dashboard extends Controller
         }
 
         $_POST['id_user'] = $_SESSION['myProfile']['id_user'];
+
+        $this->validatePostField($_POST, true);
 
         if ($_FILES['image']['error'] === 4) {
             $_POST['image'] = $_POST['old_image'];

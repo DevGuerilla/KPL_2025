@@ -83,7 +83,6 @@ class Post_model
 
             $this->db->commit();
             return $postId;
-
         } catch (Exception $e) {
             $this->db->rollBack();
             throw $e;
@@ -97,16 +96,11 @@ class Post_model
 
         // BULK INSERT - Much faster than individual inserts
         $values = [];
-        $params = [];
         $now = date("Y-m-d H:i:s");
 
         foreach ($tags as $index => $tag) {
             if (isset($tag['value']) && !empty(trim($tag['value']))) {
-                $values[] = "(:post_id, :tag_name_$index, :created_at, :updated_at)";
-                $params["post_id"] = $postId;
-                $params["tag_name_$index"] = trim($tag['value']);
-                $params["created_at"] = $now;
-                $params["updated_at"] = $now;
+                $values[] = "(:post_id_$index, :tag_name_$index, :created_at_$index, :updated_at_$index)";
             }
         }
 
@@ -114,8 +108,14 @@ class Post_model
             $query = "INSERT INTO tags (id_post, tag_name, created_at, updated_at) VALUES " . implode(', ', $values);
             $this->db->query($query);
 
-            foreach ($params as $key => $value) {
-                $this->db->bind($key, $value);
+            $bindIndex = 0;
+            foreach ($tags as $index => $tag) {
+                if (isset($tag['value']) && !empty(trim($tag['value']))) {
+                    $this->db->bind("post_id_$index", $postId);
+                    $this->db->bind("tag_name_$index", trim($tag['value']));
+                    $this->db->bind("created_at_$index", $now);
+                    $this->db->bind("updated_at_$index", $now);
+                }
             }
 
             $this->db->execute();
@@ -148,7 +148,6 @@ class Post_model
 
             $this->db->commit();
             return $this->db->rowCount();
-
         } catch (Exception $e) {
             $this->db->rollBack();
             throw $e;

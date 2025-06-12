@@ -226,9 +226,27 @@
                             <p class="text-xs sm:text-sm text-gray-500 mb-4">Kosongkan jika tidak ingin mengubah password</p>
                         </div>
 
+                        <!-- Old Password Field -->
+                        <div class="space-y-1.5">
+                            <label for="old_password" class="text-sm font-medium text-gray-700">Password Lama</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </div>
+                                <input type="password"
+                                    id="old_password"
+                                    name="old_password"
+                                    class="w-full pl-10 pr-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                            </div>
+                        </div>
+
+                        <div class=""></div>
                         <!-- Password Fields with Icons -->
                         <div class="space-y-1.5">
-                            <label for="new_password" class="text-sm font-medium text-gray-700">Password Baru</label>
+                            <label for="password" class="text-sm font-medium text-gray-700">Password Baru</label>
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,8 +254,8 @@
                                     </svg>
                                 </div>
                                 <input type="password"
-                                    id="new_password"
-                                    name="new_password"
+                                    id="password"
+                                    name="password"
                                     class="w-full pl-10 pr-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
                             </div>
                         </div>
