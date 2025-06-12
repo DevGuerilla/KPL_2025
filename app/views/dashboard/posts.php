@@ -87,7 +87,7 @@ foreach ($data['posts'] as $post) {
             </div>
         </div> -->
     </div>
-
+    <?= Flasher::flash(); ?>
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div class="p-6 border-b border-gray-200">
             <div class="flex items-center justify-between">

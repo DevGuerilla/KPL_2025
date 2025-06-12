@@ -24,6 +24,86 @@ class Dashboard extends Controller
         $this->view('dashboard/index', $data);
         $this->view('templates/footer');
     }
+
+
+    private function validasiPost($data)
+    {
+        // pastikan semua field terisi
+        if (empty($data['tags']) || empty($data['title']) || empty(trim($data['content']))) {
+            Flasher::setFlash(false, ['message' => 'Pastikan semua field terisi!']);
+            header('Location: ' . BASEURL . '/dashboard/editpost/' . $data['id_post']);
+            exit;
+        }
+    }
+
+    // validasi untuk user
+    private function validasiUser($data)
+    {
+        // pastikan semua field terisi
+        if (empty($data['username']) || empty($data['email']) || empty($data['name'])) {
+            Flasher::setFlash(false, ['message' => 'Pastikan semua field terisi!']);
+            header('Location: ' . BASEURL . '/dashboard/profile');
+            exit;
+        }
+
+        // jika new password diisi maka pastikan old password dan confirm password juga diisi
+        if (!empty($data['password']) || !empty($data['confirm_password'])) {
+            if (empty($data['old_password']) || empty($data['confirm_password'])) {
+                Flasher::setFlash(false, ['message' => 'Pastikan semua field password terisi!']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+        }
+    }
+
+    private function xssSanitize($data)
+    {
+        // title
+        if (isset($data['title'])) {
+            $data['title'] = htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8'); // Allow some HTML tags
+        }
+
+        // tags
+        if (isset($data['tags'])) {
+            // If tags is already an array, sanitize it directly
+            if (is_array($data['tags'])) {
+                $data['tags'] = array_map(function ($tag) {
+                    return is_string($tag) ? htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') : $tag;
+                }, $data['tags']);
+                // Convert to JSON string for storage
+                $data['tags'] = json_encode($data['tags']);
+            } else if (is_string($data['tags'])) {
+                // Decode JSON string to array, sanitize, then encode back
+                $tagsArray = json_decode($data['tags'], true);
+                if (is_array($tagsArray)) {
+                    $tagsArray = array_map(function ($tag) {
+                        return is_string($tag) ? htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') : $tag;
+                    }, $tagsArray);
+                    $data['tags'] = json_encode($tagsArray);
+                }
+            }
+        }
+        // id user
+        if (isset($data['id_user'])) {
+            $data['id_user'] = htmlspecialchars($data['id_user'], ENT_QUOTES, 'UTF-8');
+        }
+
+        // sanitasi untuk user
+        if (isset($data['username'])) {
+            $data['username'] = htmlspecialchars($data['username'], ENT_QUOTES, 'UTF-8');
+        }
+        if (isset($data['email'])) {
+            $data['email'] = htmlspecialchars($data['email'], ENT_QUOTES, 'UTF-8');
+        }
+
+        if (isset($data['name'])) {
+            $data['name'] = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
+        }
+
+        return $data;
+    }
+
+
     public function profile()
     {
         $data['posts'] = $this->postModel->getRecentPostByUserId($_SESSION['myProfile']['id_user']);
@@ -47,10 +127,46 @@ class Dashboard extends Controller
             $data['image'] = UploadFile::upload($_FILES, 'image', 'users');
         }
 
+        $this->validasiUser($data);
+        $data = $this->xssSanitize($data);
+
         if (empty($data['password'])) {
             $data['password'] = $user['password'];
         } else {
+            //   cek apakah password sesuai dengan yang ada di database
+            if (!password_verify($data['old_password'], $user['password'])) {
+                Flasher::setFlash(false, ['message' => 'Password lama tidak sesuai!']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+
+            // cceck apakah password baru sesuai dengan konfirmasi password
+            if ($data['password'] !== $data['confirm_password']) {
+                Flasher::setFlash(false, ['message' => 'Konfirmasi password tidak sesuai!']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+
+            // jika password sesuai, hash password baru
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        // cek apakah user mengubah username kalo iya, cek apakah username sudah terdaftar
+        if ($data['username'] !== $user['username']) {
+            if ($this->userModel->getUserByUsername($data['username'])) {
+                Flasher::setFlash(false, ['message' => 'Username sudah terdaftar!']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
+        }
+
+        // ccek apakah user mengubah email, kalo iya, cek apakah email sudah terdaftar
+        if ($data['email'] !== $user['email']) {
+            if ($this->userModel->isEmailExists($data['email'], $data['id_user'])) {
+                Flasher::setFlash(false, ['message' => 'Email sudah terdaftar!']);
+                header('Location: ' . BASEURL . '/dashboard/profile');
+                exit;
+            }
         }
 
         if ($this->userModel->updateProfile($data) > 0) {
@@ -79,7 +195,7 @@ class Dashboard extends Controller
     public function createPost()
     {
         $this->view('templates/header');
-        $this->view('dashboard/createpost');
+        $this->view('dashboard/formpost');
         $this->view('templates/footer');
     }
 
@@ -93,12 +209,16 @@ class Dashboard extends Controller
         $_POST['id_user'] = $_SESSION['myProfile']['id_user'];
 
         if ($_FILES['image']['error'] === 4) {
-            $_POST['image'] = 'default.jpg';
+            $_POST['image'] = 'default.png';
         } else {
             $_POST['image'] = UploadFile::upload($_FILES, 'image', 'posts');
         }
 
-        if ($this->postModel->createPost($_POST) > 0) {
+        // pastikan semua field terisi
+        $this->validasiPost($_POST);
+        $data = $this->xssSanitize($_POST);
+
+        if ($this->postModel->createPost($data) > 0) {
             Flasher::setFlash(true, ['message' => 'Post berhasil dibuat!']);
         } else {
             Flasher::setFlash(false, ['message' => 'Post gagal dibuat!']);
@@ -107,11 +227,26 @@ class Dashboard extends Controller
         header('Location: ' . BASEURL . '/dashboard/posts');
     }
 
-    public function editpost(Int $id)
+    public function editpost($id = null)
     {
+        // Validasi apakah ID ada dan valid
+        if ($id === null || !is_numeric($id)) {
+            Flasher::setFlash(false, ['message' => 'ID post tidak valid!']);
+            header('Location: ' . BASEURL . '/dashboard/posts');
+            exit;
+        }
+
         $data = $this->postModel->getPostTagsById($id);
+
+        // Validasi apakah post ditemukan
+        if (!$data || empty($data['post'])) {
+            Flasher::setFlash(false, ['message' => 'Post tidak ditemukan!']);
+            header('Location: ' . BASEURL . '/dashboard/posts');
+            exit;
+        }
+
         $this->view('templates/header');
-        $this->view('dashboard/createpost', $data);
+        $this->view('dashboard/formpost', $data);
         $this->view('templates/footer');
     }
 
@@ -130,7 +265,11 @@ class Dashboard extends Controller
             $_POST['image'] = UploadFile::upload($_FILES, 'image', 'posts');
         }
 
-        if ($this->postModel->updatePost($_POST) > 0) {
+
+        $this->validasiPost($_POST);
+        $data = $this->xssSanitize($_POST);
+
+        if ($this->postModel->updatePost($data) > 0) {
             Flasher::setFlash(true, ['message' => 'Post berhasil diubah!']);
         } else {
             Flasher::setFlash(false, ['message' => 'Post gagal diubah!']);
